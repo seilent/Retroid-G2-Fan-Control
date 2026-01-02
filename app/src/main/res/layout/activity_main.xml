@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#121212">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RP Fan Control"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:paddingBottom="16dp" />
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/current_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fan: -- | Temp: --"
+        android:textSize="16sp"
+        android:textColor="#00FF00"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="#1E1E1E"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Custom Fan Control Toggle -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="12dp"
+        android:background="#1E1E1E"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Enable custom fan control"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/custom_control_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Presets Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fan Presets (tap to select, long press to edit/delete)"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:paddingBottom="8dp" />
+
+    <ListView
+        android:id="@+id/preset_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#1E1E1E"
+        android:divider="#333333"
+        android:dividerHeight="1dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Add Preset Button -->
+    <Button
+        android:id="@+id/btn_add_preset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="+ Add Preset"
+        android:backgroundTint="#2196F3" />
+
+</LinearLayout>

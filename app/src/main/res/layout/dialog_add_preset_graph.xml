@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/scroll_view">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Preset Name Input -->
+        <EditText
+            android:id="@+id/preset_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Preset Name"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Instructions -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Drag points, or tap values below to edit"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Fan Curve Graph View -->
+        <com.seilent.rpfanctl.FanCurveView
+            android:id="@+id/fan_curve_graph"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Point Edit Buttons -->
+        <LinearLayout
+            android:id="@+id/point_edit_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Helper Text -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Points are automatically sorted by temperature"
+            android:textSize="10sp"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</ScrollView>

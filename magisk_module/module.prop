@@ -1,0 +1,6 @@
+id=rpfanctl
+name=RP Fan Control Daemon
+version=v1.2
+versionCode=3
+author=seilent
+description=Custom fan control daemon for Retroid Pocket devices

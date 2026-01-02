@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_fan"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/ic_fan"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FanControl">
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Quick Settings Tile -->
+        <service
+            android:name=".FanTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_fan"
+            android:label="Fan Control"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
