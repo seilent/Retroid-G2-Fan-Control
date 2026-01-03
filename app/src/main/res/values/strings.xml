@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RP Fan Control</string>
+    <string name="enable_control">Enable Control</string>
+    <string name="disable_control">Disable Control</string>
 </resources>

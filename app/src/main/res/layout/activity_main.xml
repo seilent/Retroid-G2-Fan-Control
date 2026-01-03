@@ -1,85 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#121212">
+    android:orientation="horizontal"
+    android:background="?attr/colorSurface">
 
-    <!-- Title -->
-    <TextView
-        android:layout_width="match_parent"
+    <!-- LEFT PANEL: Status Card (centered vertically) -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="RP Fan Control"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:paddingBottom="16dp" />
+        android:layout_weight="0.3"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="16dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="24dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
-    <!-- Status -->
-    <TextView
-        android:id="@+id/current_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Fan: -- | Temp: --"
-        android:textSize="16sp"
-        android:textColor="#00FF00"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="#1E1E1E"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Custom Fan Control Toggle -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="12dp"
-        android:background="#1E1E1E"
-        android:layout_marginBottom="16dp">
-
-        <TextView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Enable custom fan control"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center_horizontal">
 
-        <Switch
-            android:id="@+id/custom_control_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            <!-- App Title (no icon) -->
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginBottom="24dp" />
 
-    <!-- Presets Section -->
-    <TextView
-        android:layout_width="match_parent"
+            <!-- Temperature Display -->
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Temperature"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginBottom="4dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/temperature_display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="--°C"
+                android:textAppearance="?attr/textAppearanceDisplayLarge"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Fan Speed Display -->
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fan Speed"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginBottom="4dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/fan_speed_display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="--%"
+                android:textAppearance="?attr/textAppearanceDisplayMedium"
+                android:textColor="?attr/colorSecondary"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Custom Control Toggle -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/control_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Disabled"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/custom_control_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- RIGHT PANEL: Presets List (scrollable) -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:fillViewport="true"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Presets Header -->
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fan Presets"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to select • Long press to edit"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Presets RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/preset_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:nestedScrollingEnabled="false" />
+
+            <!-- Spacer for FAB -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="80dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Floating Action Button (overlay) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_preset"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fan Presets (tap to select, long press to edit/delete)"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:paddingBottom="8dp" />
-
-    <ListView
-        android:id="@+id/preset_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#1E1E1E"
-        android:divider="#333333"
-        android:dividerHeight="1dp"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Add Preset Button -->
-    <Button
-        android:id="@+id/btn_add_preset"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="+ Add Preset"
-        android:backgroundTint="#2196F3" />
+        android:layout_gravity="end|bottom"
+        android:layout_margin="24dp"
+        android:contentDescription="Add Preset"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:tint="?attr/colorOnPrimaryContainer"
+        app:fabSize="normal" />
 
 </LinearLayout>

@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,16 +13,20 @@ import android.service.quicksettings.TileService;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,9 +41,12 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences prefs;
     private ArrayList<Preset> presets;
     private PresetAdapter presetAdapter;
-    private ListView presetList;
-    private TextView currentStatus;
-    private Switch customControlSwitch;
+    private RecyclerView presetRecyclerView;
+    private TextView temperatureDisplay;
+    private TextView fanSpeedDisplay;
+    private MaterialSwitch customControlSwitch;
+    private MaterialTextView controlLabel;
+    private FloatingActionButton fabAddPreset;
     private String currentPresetName;
     private boolean isProgrammaticChange = false;
 
@@ -61,25 +69,29 @@ public class MainActivity extends AppCompatActivity {
             currentPresetName = "Default";
         }
 
-        presetList = findViewById(R.id.preset_list);
-        currentStatus = findViewById(R.id.current_status);
+        // Initialize Material Components
+        temperatureDisplay = findViewById(R.id.temperature_display);
+        fanSpeedDisplay = findViewById(R.id.fan_speed_display);
         customControlSwitch = findViewById(R.id.custom_control_switch);
+        controlLabel = findViewById(R.id.control_label);
+        fabAddPreset = findViewById(R.id.fab_add_preset);
+        presetRecyclerView = findViewById(R.id.preset_list);
 
+        // Set up RecyclerView with LinearLayoutManager
+        presetRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         presetAdapter = new PresetAdapter(this, presets, currentPresetName);
-        presetList.setAdapter(presetAdapter);
+        presetRecyclerView.setAdapter(presetAdapter);
 
-        presetList.setOnItemClickListener((parent, view, position, id) -> {
-            Preset selected = presets.get(position);
-            selectPreset(selected);
-        });
-
-        presetList.setOnItemLongClickListener((parent, view, position, id) -> {
+        // Set up click listeners
+        presetAdapter.setOnItemClickListener(preset -> selectPreset(preset));
+        presetAdapter.setOnItemLongClickListener(position -> {
             showEditDeleteDialog(position);
             return true;
         });
 
         boolean isCustomEnabled = RootHelper.isFanControlEnabled();
         customControlSwitch.setChecked(isCustomEnabled);
+        updateControlLabel(isCustomEnabled);
         customControlSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isProgrammaticChange) return;
             if (isChecked) {
@@ -89,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.btn_add_preset).setOnClickListener(v -> showAddPresetDialog(-1));
+        // Replace button with FAB
+        fabAddPreset.setOnClickListener(v -> showAddPresetDialog(-1));
 
         statusUpdateHandler = new Handler(Looper.getMainLooper());
         statusUpdateRunnable = new Runnable() {
@@ -100,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 isProgrammaticChange = true;
                 boolean isCustomEnabled = RootHelper.isFanControlEnabled();
                 customControlSwitch.setChecked(isCustomEnabled);
+                updateControlLabel(isCustomEnabled);
                 isProgrammaticChange = false;
                 statusUpdateHandler.postDelayed(this, 1000);
             }
@@ -117,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         isProgrammaticChange = true;
         boolean isCustomEnabled = RootHelper.isFanControlEnabled();
         customControlSwitch.setChecked(isCustomEnabled);
+        updateControlLabel(isCustomEnabled);
         isProgrammaticChange = false;
         updateStatus();
     }
@@ -125,6 +140,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         statusUpdateHandler.removeCallbacks(statusUpdateRunnable);
+    }
+
+    private void updateControlLabel(boolean isEnabled) {
+        if (isEnabled) {
+            controlLabel.setText("Enabled");
+        } else {
+            controlLabel.setText("Disabled");
+        }
     }
 
     private void enableCustomControl() {
@@ -245,6 +268,10 @@ public class MainActivity extends AppCompatActivity {
         EditText nameInput = dialogView.findViewById(R.id.preset_name);
         FanCurveView graphView = dialogView.findViewById(R.id.fan_curve_graph);
         LinearLayout pointEditContainer = dialogView.findViewById(R.id.point_edit_container);
+        com.google.android.material.button.MaterialButton btnSave = dialogView.findViewById(R.id.btn_save);
+        com.google.android.material.button.MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+
+        btnSave.setText(isEdit ? "Save" : "Add");
 
         if (isEdit) {
             nameInput.setText(editingPreset.getName());
@@ -265,39 +292,39 @@ public class MainActivity extends AppCompatActivity {
         });
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle(isEdit ? "Edit Preset" : "Add Preset")
             .setView(dialogView)
-            .setPositiveButton(isEdit ? "Save" : "Add", (d, which) -> {
-                String name = nameInput.getText().toString().trim();
-                if (name.isEmpty()) {
-                    name = "Custom Preset";
-                }
-
-                List<Preset.TempPoint> points = graphView.getPoints();
-                if (points.isEmpty()) {
-                    Toast.makeText(this, "Please add at least one point", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Preset newPreset = new Preset(name, points);
-
-                if (isEdit) {
-                    presets.set(editPosition, newPreset);
-                } else {
-                    presets.add(newPreset);
-                }
-                savePresets();
-                refreshPresetList();
-                Toast.makeText(this, isEdit ? "Preset saved" : "Preset added", Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Cancel", null)
             .create();
+
+        btnSave.setOnClickListener(v -> {
+            String name = nameInput.getText().toString().trim();
+            if (name.isEmpty()) {
+                name = "Custom Preset";
+            }
+
+            List<Preset.TempPoint> points = graphView.getPoints();
+            if (points.isEmpty()) {
+                Toast.makeText(this, "Please add at least one point", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Preset newPreset = new Preset(name, points);
+
+            if (isEdit) {
+                presets.set(editPosition, newPreset);
+            } else {
+                presets.add(newPreset);
+            }
+            savePresets();
+            refreshPresetList();
+            Toast.makeText(this, isEdit ? "Preset saved" : "Preset added", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.setOnShowListener(d -> {
             android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
-            int width = (int) (metrics.widthPixels * 0.9);
-            int height = (int) (metrics.heightPixels * 0.85);
-            dialog.getWindow().setLayout(width, height);
+            dialog.getWindow().setLayout(metrics.widthPixels, metrics.heightPixels);
         });
 
         dialog.show();
@@ -312,46 +339,52 @@ public class MainActivity extends AppCompatActivity {
             final int index = i;
 
             LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setOrientation(LinearLayout.VERTICAL);
             row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setPadding(0, 4, 0, 4);
+            row.setPadding(0, 4, 0, 8);
 
+            // Point label
             TextView label = new TextView(this);
-            label.setText("Point " + (index + 1) + ":");
-            label.setTextSize(12);
-            label.setPadding(0, 0, 16, 0);
+            label.setText("Point " + (index + 1));
+            label.setTextSize(11);
+            label.setTextColor(getColor(R.color.md_theme_light_onSurfaceVariant));
             row.addView(label);
 
+            // Values row
+            LinearLayout valuesRow = new LinearLayout(this);
+            valuesRow.setOrientation(LinearLayout.HORIZONTAL);
+            valuesRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+            // Temperature button (compact)
             Button tempBtn = new Button(this);
-            tempBtn.setText(point.temperature + "°C");
-            tempBtn.setTextSize(11);
-            tempBtn.setPadding(16, 8, 16, 8);
+            tempBtn.setText(point.temperature + "°");
+            tempBtn.setTextSize(12);
+            tempBtn.setPadding(12, 6, 12, 6);
+            tempBtn.setMinimumWidth(60);
             tempBtn.setBackgroundColor(isDarkMode() ? 0xFF333333 : 0xFFE0E0E0);
             tempBtn.setTextColor(0xFFFFFFFF);
             tempBtn.setOnClickListener(v -> showValueEditDialog("Temperature", index, true, graphView));
-            row.addView(tempBtn, new LinearLayout.LayoutParams(
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                1));
+            valuesRow.addView(tempBtn);
 
+            // Arrow
             TextView arrow = new TextView(this);
             arrow.setText("→");
             arrow.setTextSize(14);
-            arrow.setPadding(16, 0, 16, 0);
-            row.addView(arrow);
+            arrow.setPadding(8, 0, 8, 0);
+            valuesRow.addView(arrow);
 
+            // Fan speed button (compact)
             Button fanBtn = new Button(this);
             fanBtn.setText(point.fanPercent + "%");
-            fanBtn.setTextSize(11);
-            fanBtn.setPadding(16, 8, 16, 8);
+            fanBtn.setTextSize(12);
+            fanBtn.setPadding(12, 6, 12, 6);
+            fanBtn.setMinimumWidth(60);
             fanBtn.setBackgroundColor(isDarkMode() ? 0xFF333333 : 0xFFE0E0E0);
             fanBtn.setTextColor(0xFFFFFFFF);
             fanBtn.setOnClickListener(v -> showValueEditDialog("Fan Speed", index, false, graphView));
-            row.addView(fanBtn, new LinearLayout.LayoutParams(
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                1));
+            valuesRow.addView(fanBtn);
 
+            row.addView(valuesRow);
             container.addView(row);
         }
     }
@@ -376,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         TextView hint = new TextView(this);
-        hint.setText(isTemp ? "Enter temperature (40-100°C):" : "Enter fan speed (0-100%):");
+        hint.setText(isTemp ? "Enter temperature (0-100°C):" : "Enter fan speed (0-100%):");
         hint.setTextSize(14);
         layout.addView(hint);
 
@@ -444,37 +477,19 @@ public class MainActivity extends AppCompatActivity {
         int percent = Preset.dutyToPercent(duty);
         int temp = RootHelper.getCpuTemp() / 1000;
 
-        String status = "Fan: " + percent + "% | Temp: " + temp + "°C";
-        currentStatus.setText(status);
-    }
+        // Update separate displays
+        temperatureDisplay.setText(temp + "°C");
+        fanSpeedDisplay.setText(percent + "%");
 
-    private class PresetAdapter extends ArrayAdapter<Preset> {
-        private String currentPresetName;
-
-        public PresetAdapter(Context context, ArrayList<Preset> presets, String currentPresetName) {
-            super(context, android.R.layout.simple_list_item_1, presets);
-            this.currentPresetName = currentPresetName;
+        // Update temperature text color based on threshold
+        int tempColor;
+        if (temp >= 80) {
+            tempColor = getColor(R.color.md_theme_light_error);
+        } else if (temp >= 60) {
+            tempColor = getColor(R.color.md_theme_light_primary);
+        } else {
+            tempColor = getColor(R.color.md_theme_light_secondary);
         }
-
-        public void setCurrentPreset(String name) {
-            this.currentPresetName = name;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-            TextView textView = (TextView) view.findViewById(android.R.id.text1);
-
-            Preset preset = getItem(position);
-            if (preset != null && preset.getName().equals(currentPresetName)) {
-                textView.setText("✓ " + preset.toString());
-                textView.setTextColor(0xFF4FC3F7);
-            } else {
-                textView.setText(preset.toString());
-                textView.setTextColor(0xFFFFFFFF);
-            }
-
-            return view;
-        }
+        temperatureDisplay.setTextColor(tempColor);
     }
 }
