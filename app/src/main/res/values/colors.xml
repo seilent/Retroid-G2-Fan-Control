@@ -59,4 +59,32 @@
     <color name="md_theme_dark_onSurface">#E1E3DF</color>
     <color name="md_theme_dark_surfaceVariant">#414942</color>
     <color name="md_theme_dark_onSurfaceVariant">#C1C9C2</color>
+
+    <!-- Fan Curve Graph Colors -->
+    <!-- Light mode graph colors -->
+    <color name="fan_curve_light_background">#F5F5F5</color>
+    <color name="fan_curve_light_grid">#E0E0E0</color>
+    <color name="fan_curve_light_axis">#666666</color>
+    <color name="fan_curve_light_text">#666666</color>
+    <color name="fan_curve_light_point">#FFFFFF</color>
+    <color name="fan_curve_light_curve">#2196F3</color>
+    <color name="fan_curve_light_fill">#402196F3</color>
+
+    <!-- Dark mode graph colors -->
+    <color name="fan_curve_dark_background">#1E1E1E</color>
+    <color name="fan_curve_dark_grid">#333333</color>
+    <color name="fan_curve_dark_axis">#888888</color>
+    <color name="fan_curve_dark_text">#AAAAAA</color>
+    <color name="fan_curve_dark_point">#E0E0E0</color>
+    <color name="fan_curve_dark_curve">#4FC3F7</color>
+    <color name="fan_curve_dark_fill">#504FC3F7</color>
+
+    <!-- Fan Icon Colors -->
+    <color name="fan_icon_background">#363F3E</color>
+    <color name="fan_icon_screw_hole">#B6B7B7</color>
+    <color name="fan_icon_outer_ring">#DDDDDD</color>
+    <color name="fan_icon_blade_primary">#E8A615</color>
+    <color name="fan_icon_blade_secondary">#CC8C0D</color>
+    <color name="fan_icon_hub_center">#E8A615</color>
+    <color name="fan_icon_hub_detail">#DB960E</color>
 </resources>

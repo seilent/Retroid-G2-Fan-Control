@@ -333,6 +333,17 @@ public class MainActivity extends AppCompatActivity {
     private void updatePointEditButtons(LinearLayout container, FanCurveView graphView) {
         container.removeAllViews();
 
+        // Get consistent spacing and colors from resources
+        int spacingXs = getResources().getDimensionPixelSize(R.dimen.spacing_xs);
+        int spacingSm = getResources().getDimensionPixelSize(R.dimen.spacing_sm);
+        int pointRowPaddingBottom = spacingSm;
+        int pointRowPaddingTop = spacingXs;
+
+        // Get colors based on theme
+        int buttonBgColor = getColor(isDarkMode() ? R.color.md_theme_dark_surfaceVariant : R.color.md_theme_light_surfaceVariant);
+        int buttonTextColor = getColor(isDarkMode() ? R.color.md_theme_dark_onSurfaceVariant : R.color.md_theme_light_onSurfaceVariant);
+        int labelTextColor = getColor(android.R.color.darker_gray);
+
         List<Preset.TempPoint> points = graphView.getPoints();
         for (int i = 0; i < points.size(); i++) {
             Preset.TempPoint point = points.get(i);
@@ -341,13 +352,13 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.VERTICAL);
             row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setPadding(0, 4, 0, 8);
+            row.setPadding(0, pointRowPaddingTop, 0, pointRowPaddingBottom);
 
             // Point label
             TextView label = new TextView(this);
             label.setText("Point " + (index + 1));
-            label.setTextSize(11);
-            label.setTextColor(getColor(R.color.md_theme_light_onSurfaceVariant));
+            label.setTextAppearance(android.R.style.TextAppearance_Small);
+            label.setTextColor(labelTextColor);
             row.addView(label);
 
             // Values row
@@ -355,38 +366,43 @@ public class MainActivity extends AppCompatActivity {
             valuesRow.setOrientation(LinearLayout.HORIZONTAL);
             valuesRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
 
-            // Temperature button (compact, half width)
-            Button tempBtn = new Button(this);
-            tempBtn.setText(point.temperature + "°");
-            tempBtn.setTextSize(12);
-            tempBtn.setPadding(8, 6, 8, 6);
-            tempBtn.setMinimumWidth(45);
-            tempBtn.setBackgroundColor(isDarkMode() ? 0xFF333333 : 0xFFE0E0E0);
-            tempBtn.setTextColor(0xFFFFFFFF);
+            // Temperature button
+            Button tempBtn = createValueButton(point.temperature + "°", buttonBgColor, buttonTextColor);
             tempBtn.setOnClickListener(v -> showValueEditDialog("Temperature", index, true, graphView));
             valuesRow.addView(tempBtn);
 
             // Arrow
             TextView arrow = new TextView(this);
             arrow.setText("→");
-            arrow.setTextSize(14);
-            arrow.setPadding(8, 0, 8, 0);
+            arrow.setTextAppearance(android.R.style.TextAppearance_Medium);
+            arrow.setPadding(spacingSm, 0, spacingSm, 0);
             valuesRow.addView(arrow);
 
-            // Fan speed button (compact)
-            Button fanBtn = new Button(this);
-            fanBtn.setText(point.fanPercent + "%");
-            fanBtn.setTextSize(12);
-            fanBtn.setPadding(12, 6, 12, 6);
-            fanBtn.setMinimumWidth(60);
-            fanBtn.setBackgroundColor(isDarkMode() ? 0xFF333333 : 0xFFE0E0E0);
-            fanBtn.setTextColor(0xFFFFFFFF);
+            // Fan speed button
+            Button fanBtn = createValueButton(point.fanPercent + "%", buttonBgColor, buttonTextColor);
             fanBtn.setOnClickListener(v -> showValueEditDialog("Fan Speed", index, false, graphView));
             valuesRow.addView(fanBtn);
 
             row.addView(valuesRow);
             container.addView(row);
         }
+    }
+
+    private Button createValueButton(String text, int bgColor, int textColor) {
+        Button btn = new Button(this, null, android.R.attr.buttonBarButtonStyle);
+        btn.setText(text);
+        btn.setBackgroundColor(bgColor);
+        btn.setTextColor(textColor);
+        btn.setPadding(
+            getResources().getDimensionPixelSize(R.dimen.spacing_sm),
+            getResources().getDimensionPixelSize(R.dimen.spacing_xs),
+            getResources().getDimensionPixelSize(R.dimen.spacing_sm),
+            getResources().getDimensionPixelSize(R.dimen.spacing_xs)
+        );
+        btn.setMinimumHeight(
+            getResources().getDimensionPixelSize(R.dimen.touch_target_min)
+        );
+        return btn;
     }
 
     private boolean isDarkMode() {
@@ -404,22 +420,26 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title + " - Point " + (pointIndex + 1));
 
+        // Use consistent padding from dimens
+        int paddingXl = getResources().getDimensionPixelSize(R.dimen.spacing_xl);
+        int paddingLg = getResources().getDimensionPixelSize(R.dimen.spacing_lg);
+
         LinearLayout layout = new LinearLayout(this);
-        layout.setPadding(40, 20, 40, 20);
+        layout.setPadding(paddingXl, paddingLg, paddingXl, paddingLg);
         layout.setOrientation(LinearLayout.VERTICAL);
 
         TextView hint = new TextView(this);
         hint.setText(isTemp ? "Enter temperature (0-100°C):" : "Enter fan speed (0-100%):");
-        hint.setTextSize(14);
+        hint.setTextAppearance(android.R.style.TextAppearance_Medium);
         layout.addView(hint);
 
         EditText input = new EditText(this);
         input.setText(String.valueOf(isTemp ? point.temperature : point.fanPercent));
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         input.setSelectAllOnFocus(true);
-        // Set fixed width for temperature input to make it more compact
+        // Set consistent width for input
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            isTemp ? 180 : android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            getResources().getDimensionPixelSize(R.dimen.spacing_xl) * 5,
             android.view.ViewGroup.LayoutParams.WRAP_CONTENT
         );
         input.setLayoutParams(params);

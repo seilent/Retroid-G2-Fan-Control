@@ -2,9 +2,10 @@ package com.seilent.rpfanctl;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import androidx.annotation.ColorRes;
 import android.graphics.Path;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -56,24 +57,6 @@ public class FanCurveView extends View {
 
     // Dark mode
     private boolean isDarkMode;
-
-    // Colors for light mode
-    private static final int LIGHT_BG = Color.parseColor("#F5F5F5");
-    private static final int LIGHT_GRID = Color.parseColor("#E0E0E0");
-    private static final int LIGHT_AXIS = Color.parseColor("#666666");
-    private static final int LIGHT_TEXT = Color.parseColor("#666666");
-    private static final int LIGHT_POINT = Color.WHITE;
-    private static final int LIGHT_CURVE = Color.parseColor("#2196F3");
-    private static final int LIGHT_FILL = Color.parseColor("#402196F3");
-
-    // Colors for dark mode
-    private static final int DARK_BG = Color.parseColor("#1E1E1E");
-    private static final int DARK_GRID = Color.parseColor("#333333");
-    private static final int DARK_AXIS = Color.parseColor("#888888");
-    private static final int DARK_TEXT = Color.parseColor("#AAAAAA");
-    private static final int DARK_POINT = Color.parseColor("#E0E0E0");
-    private static final int DARK_CURVE = Color.parseColor("#4FC3F7");
-    private static final int DARK_FILL = Color.parseColor("#504FC3F7");
 
     public FanCurveView(Context context) {
         super(context);
@@ -132,14 +115,22 @@ public class FanCurveView extends View {
         return nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES;
     }
 
+    private int getColor(@ColorRes int colorId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return getResources().getColor(colorId, getContext().getTheme());
+        } else {
+            return getResources().getColor(colorId);
+        }
+    }
+
     private void initPaints(float density) {
-        int bgColor = isDarkMode ? DARK_BG : LIGHT_BG;
-        int gridColor = isDarkMode ? DARK_GRID : LIGHT_GRID;
-        int axisColor = isDarkMode ? DARK_AXIS : LIGHT_AXIS;
-        int textColor = isDarkMode ? DARK_TEXT : LIGHT_TEXT;
-        int pointColor = isDarkMode ? DARK_POINT : LIGHT_POINT;
-        int curveColor = isDarkMode ? DARK_CURVE : LIGHT_CURVE;
-        int fillColor = isDarkMode ? DARK_FILL : LIGHT_FILL;
+        int bgColor = getColor(isDarkMode ? R.color.fan_curve_dark_background : R.color.fan_curve_light_background);
+        int gridColor = getColor(isDarkMode ? R.color.fan_curve_dark_grid : R.color.fan_curve_light_grid);
+        int axisColor = getColor(isDarkMode ? R.color.fan_curve_dark_axis : R.color.fan_curve_light_axis);
+        int textColor = getColor(isDarkMode ? R.color.fan_curve_dark_text : R.color.fan_curve_light_text);
+        int pointColor = getColor(isDarkMode ? R.color.fan_curve_dark_point : R.color.fan_curve_light_point);
+        int curveColor = getColor(isDarkMode ? R.color.fan_curve_dark_curve : R.color.fan_curve_light_curve);
+        int fillColor = getColor(isDarkMode ? R.color.fan_curve_dark_fill : R.color.fan_curve_light_fill);
 
         // Background
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);

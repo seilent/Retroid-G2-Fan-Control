@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.3"
         android:layout_gravity="center_vertical"
-        android:layout_margin="16dp"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="24dp"
+        android:layout_margin="@dimen/spacing_lg"
+        app:cardElevation="@dimen/elevation_md"
+        app:cardCornerRadius="@dimen/corner_radius_lg"
         app:strokeWidth="0dp"
         app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:padding="@dimen/spacing_lg"
             android:gravity="center_horizontal">
 
             <!-- App Title (no icon) -->
@@ -32,7 +32,7 @@
                 android:text="@string/app_name"
                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="@dimen/spacing_xl" />
 
             <!-- Temperature Display -->
             <com.google.android.material.textview.MaterialTextView
@@ -41,7 +41,7 @@
                 android:text="Temperature"
                 android:textAppearance="?attr/textAppearanceLabelLarge"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="@dimen/spacing_xs" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/temperature_display"
@@ -51,7 +51,7 @@
                 android:textAppearance="?attr/textAppearanceDisplayLarge"
                 android:textColor="?attr/colorPrimary"
                 android:textStyle="bold"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="@dimen/spacing_xl" />
 
             <!-- Fan Speed Display -->
             <com.google.android.material.textview.MaterialTextView
@@ -60,7 +60,7 @@
                 android:text="Fan Speed"
                 android:textAppearance="?attr/textAppearanceLabelLarge"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="@dimen/spacing_xs" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/fan_speed_display"
@@ -70,7 +70,7 @@
                 android:textAppearance="?attr/textAppearanceDisplayMedium"
                 android:textColor="?attr/colorSecondary"
                 android:textStyle="bold"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="@dimen/spacing_xl" />
 
             <!-- Custom Control Toggle -->
             <LinearLayout
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp">
+                android:padding="@dimen/spacing_md">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/control_label"
@@ -105,7 +105,7 @@
         android:layout_height="match_parent"
         android:layout_weight="0.7"
         android:fillViewport="true"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_lg">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -119,8 +119,8 @@
                 android:text="Fan Presets"
                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:textColor="?attr/colorOnSurface"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:layout_marginBottom="@dimen/spacing_sm" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
@@ -128,8 +128,8 @@
                 android:text="Tap to select • Long press to edit"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:layout_marginBottom="@dimen/spacing_lg" />
 
             <!-- Presets RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
@@ -137,14 +137,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
+                android:paddingStart="@dimen/spacing_sm"
+                android:paddingEnd="@dimen/spacing_sm"
                 android:nestedScrollingEnabled="false" />
 
             <!-- Spacer for FAB -->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="80dp" />
+                android:layout_height="@dimen/spacing_xxl" />
 
         </LinearLayout>
     </ScrollView>
@@ -155,7 +155,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_margin="24dp"
+        android:layout_margin="@dimen/spacing_xl"
         android:contentDescription="Add Preset"
         app:srcCompat="@android:drawable/ic_input_add"
         app:tint="?attr/colorOnPrimaryContainer"

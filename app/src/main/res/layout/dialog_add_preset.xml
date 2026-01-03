@@ -1,207 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/DialogRootLayout">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Preset Name"
-        android:textColor="#000000"
-        android:textSize="14sp" />
+        style="@style/TextLabelStyle" />
 
-    <EditText
-        android:id="@+id/preset_name"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="e.g., My Custom Curve"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="@dimen/spacing_lg"
+        app:boxBackgroundMode="outline"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-    <TextView
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/preset_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g., My Custom Curve"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Temperature &amp; Fan Speed Points"
-        android:textStyle="bold"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp" />
+        style="@style/TextLabelStyle.Bold" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add temperature points in ascending order"
-        android:textColor="#666666"
-        android:textSize="12sp"
-        android:layout_marginBottom="12dp" />
+        style="@style/TextHelperStyle" />
 
     <!-- Point 1 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_vertical">
+    <LinearLayout style="@style/EditPointRowStyle">
 
-        <EditText
-            android:id="@+id/temp1_temp"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="60°C"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp1_temp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="60°C"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="→"
-            android:textColor="#000000"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:layout_marginEnd="@dimen/spacing_sm" />
 
-        <EditText
-            android:id="@+id/temp1_fan"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="10%"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp1_fan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="10%"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="%"
-            android:textColor="#666666"
-            android:layout_marginStart="4dp" />
+            style="@style/TextUnitLabelStyle" />
     </LinearLayout>
 
     <!-- Point 2 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_vertical">
+    <LinearLayout style="@style/EditPointRowStyle">
 
-        <EditText
-            android:id="@+id/temp2_temp"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="70°C"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp2_temp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="70°C"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="→"
-            android:textColor="#000000"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:layout_marginEnd="@dimen/spacing_sm" />
 
-        <EditText
-            android:id="@+id/temp2_fan"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="20%"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp2_fan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="20%"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="%"
-            android:textColor="#666666"
-            android:layout_marginStart="4dp" />
+            style="@style/TextUnitLabelStyle" />
     </LinearLayout>
 
     <!-- Point 3 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_vertical">
+    <LinearLayout style="@style/EditPointRowStyle">
 
-        <EditText
-            android:id="@+id/temp3_temp"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="80°C"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp3_temp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="80°C"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="→"
-            android:textColor="#000000"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:layout_marginEnd="@dimen/spacing_sm" />
 
-        <EditText
-            android:id="@+id/temp3_fan"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="50%"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp3_fan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="50%"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="%"
-            android:textColor="#666666"
-            android:layout_marginStart="4dp" />
+            style="@style/TextUnitLabelStyle" />
     </LinearLayout>
 
     <!-- Point 4 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_vertical">
+    <LinearLayout style="@style/EditPointRowStyle">
 
-        <EditText
-            android:id="@+id/temp4_temp"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="90°C"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp4_temp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="90°C"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="→"
-            android:textColor="#000000"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:layout_marginEnd="@dimen/spacing_sm" />
 
-        <EditText
-            android:id="@+id/temp4_fan"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="100%"
-            android:inputType="number" />
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/temp4_fan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="100%"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="%"
-            android:textColor="#666666"
-            android:layout_marginStart="4dp" />
+            style="@style/TextUnitLabelStyle" />
     </LinearLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Temperatures must be in ascending order. Use 0 for unused points."
-        android:textColor="#999999"
-        android:textSize="11sp"
-        android:layout_marginTop="8dp" />
+        style="@style/TextHelperStyle"
+        android:layout_marginTop="@dimen/spacing_sm" />
 
 </LinearLayout>

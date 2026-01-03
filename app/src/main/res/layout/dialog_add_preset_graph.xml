@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.75"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_lg">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,13 +32,13 @@
         android:layout_height="match_parent"
         android:layout_weight="0.25"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_lg">
 
         <!-- Preset Name Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/spacing_lg"
             app:boxBackgroundMode="outline"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
@@ -48,8 +48,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Preset Name"
                 android:inputType="text"
-                android:maxLines="1"
-                android:textSize="14sp" />
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Point Edit Buttons Container (scrollable) -->
@@ -67,11 +66,7 @@
         </ScrollView>
 
         <!-- Action Buttons at bottom (horizontal) -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+        <LinearLayout style="@style/DialogButtonContainer">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_cancel"

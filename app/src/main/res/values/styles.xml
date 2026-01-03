@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Text Styles for Dialog Labels -->
+    <style name="TextLabelStyle">
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_sm</item>
+    </style>
+
+    <style name="TextLabelStyle.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Text Styles for Helper Text -->
+    <style name="TextHelperStyle">
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_md</item>
+    </style>
+
+    <!-- Text Styles for Unit Labels (°C, %) -->
+    <style name="TextUnitLabelStyle">
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:layout_marginStart">@dimen/spacing_xs</item>
+    </style>
+
+    <!-- Edit Point Row Container -->
+    <style name="EditPointRowStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_sm</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!-- Dialog Root Layout -->
+    <style name="DialogRootLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/spacing_lg</item>
+    </style>
+
+    <!-- Dialog Button Container -->
+    <style name="DialogButtonContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginTop">@dimen/spacing_sm</item>
+    </style>
+</resources>
