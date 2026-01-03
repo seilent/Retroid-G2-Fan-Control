@@ -85,12 +85,12 @@ public class FanCurveView extends View {
         points.add(new Preset.TempPoint(70, 15));
         points.add(new Preset.TempPoint(80, 20));
 
-        // Calculate padding based on screen density
+        // Calculate padding based on screen density (optimized for larger graphs)
         float density = getResources().getDisplayMetrics().density;
-        paddingLeft = (int) (45 * density);
-        paddingRight = (int) (15 * density);
-        paddingTop = (int) (30 * density);
-        paddingBottom = (int) (35 * density);
+        paddingLeft = (int) (40 * density);
+        paddingRight = (int) (12 * density);
+        paddingTop = (int) (24 * density);
+        paddingBottom = (int) (28 * density);
 
         // Touch targets
         pointRadius = (int) (16 * density);
@@ -241,8 +241,8 @@ public class FanCurveView extends View {
             canvas.drawLine(x, graphArea.top, x, graphArea.bottom, gridPaint);
         }
 
-        // Horizontal lines (fan %) - every 25%
-        for (int fan = 0; fan <= MAX_FAN; fan += 25) {
+        // Horizontal lines (fan %) - every 10% for square grid
+        for (int fan = 0; fan <= MAX_FAN; fan += 10) {
             float y = fanToY(fan);
             canvas.drawLine(graphArea.left, y, graphArea.right, y, gridPaint);
         }
@@ -259,8 +259,8 @@ public class FanCurveView extends View {
     private void drawAxisLabels(Canvas canvas) {
         textPaint.setTextAlign(Paint.Align.RIGHT);
 
-        // Y-axis labels (fan %)
-        for (int fan = 0; fan <= MAX_FAN; fan += 25) {
+        // Y-axis labels (fan %) - every 10% for square grid
+        for (int fan = 0; fan <= MAX_FAN; fan += 10) {
             float y = fanToY(fan);
             canvas.drawText(fan + "%", paddingLeft - 6, y + 3, textPaint);
         }

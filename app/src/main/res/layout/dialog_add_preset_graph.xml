@@ -4,47 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:background="?attr/colorSurface">
+    android:background="?attr/colorSurface"
+    android:padding="@dimen/spacing_sm">
 
-    <!-- LEFT PANEL: Fan Curve Graph only (75% width) -->
-    <ScrollView
+    <!-- LEFT PANEL: Fan Curve Graph (70% width) -->
+    <com.seilent.rpfanctl.FanCurveView
+        android:id="@+id/fan_curve_graph"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.75"
-        android:padding="@dimen/spacing_lg"
-        android:paddingBottom="@dimen/spacing_lg"
-        android:clipToPadding="false">
+        android:layout_weight="0.70"
+        android:layout_margin="@dimen/spacing_xs" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Fan Curve Graph View -->
-            <com.seilent.rpfanctl.FanCurveView
-                android:id="@+id/fan_curve_graph"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="400dp" />
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- RIGHT PANEL: Preset name, edit points, and buttons (25% width) -->
+    <!-- RIGHT PANEL: Preset name, edit points, and buttons (30% width) -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.25"
+        android:layout_weight="0.30"
         android:orientation="vertical"
-        android:paddingStart="@dimen/spacing_lg"
-        android:paddingEnd="@dimen/spacing_lg"
-        android:paddingTop="@dimen/spacing_lg"
-        android:paddingBottom="@dimen/spacing_lg">
+        android:padding="@dimen/spacing_sm">
 
         <!-- Preset Name Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_lg"
+            android:layout_marginBottom="@dimen/spacing_sm"
             app:boxBackgroundMode="outline"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
@@ -62,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:fillViewport="false">
+            android:fillViewport="true">
 
             <LinearLayout
                 android:id="@+id/point_edit_container"
@@ -71,30 +54,22 @@
                 android:orientation="vertical" />
         </ScrollView>
 
-        <!-- Action Buttons at bottom -->
-        <LinearLayout
+        <!-- Action Buttons at bottom (stacked vertically) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/spacing_sm">
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            android:text="Cancel"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_cancel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="@dimen/spacing_sm"
-                android:text="Cancel"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_save"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Save"
-                style="@style/Widget.Material3.Button.UnelevatedButton" />
-        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            style="@style/Widget.Material3.Button.UnelevatedButton" />
     </LinearLayout>
 
 </LinearLayout>

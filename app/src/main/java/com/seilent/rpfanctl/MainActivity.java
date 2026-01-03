@@ -322,12 +322,21 @@ public class MainActivity extends AppCompatActivity {
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-        dialog.setOnShowListener(d -> {
-            android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
-            dialog.getWindow().setLayout(metrics.widthPixels, metrics.heightPixels);
-        });
-
         dialog.show();
+
+        // Set window layout after showing to fill screen with minimal padding
+        android.view.Window window = dialog.getWindow();
+        if (window != null) {
+            android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
+            int paddingSide = (int) (8 * metrics.density);
+            int paddingTop = (int) (8 * metrics.density);
+            int paddingBottom = (int) (24 * metrics.density);
+            window.setLayout(
+                metrics.widthPixels - (paddingSide * 2),
+                metrics.heightPixels - paddingTop - paddingBottom
+            );
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+        }
     }
 
     private void updatePointEditButtons(LinearLayout container, FanCurveView graphView) {
@@ -350,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setPadding(0, spacingXs, 0, spacingSm);
+            row.setPadding(0, spacingXs, 0, spacingXs);
 
             // Temperature button
             Button tempBtn = createValueButton(point.temperature + "°", buttonBgColor, buttonTextColor);
