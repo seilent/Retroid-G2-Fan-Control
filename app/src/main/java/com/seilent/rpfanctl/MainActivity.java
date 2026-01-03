@@ -355,12 +355,12 @@ public class MainActivity extends AppCompatActivity {
             valuesRow.setOrientation(LinearLayout.HORIZONTAL);
             valuesRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
 
-            // Temperature button (compact)
+            // Temperature button (compact, half width)
             Button tempBtn = new Button(this);
             tempBtn.setText(point.temperature + "°");
             tempBtn.setTextSize(12);
-            tempBtn.setPadding(12, 6, 12, 6);
-            tempBtn.setMinimumWidth(60);
+            tempBtn.setPadding(8, 6, 8, 6);
+            tempBtn.setMinimumWidth(45);
             tempBtn.setBackgroundColor(isDarkMode() ? 0xFF333333 : 0xFFE0E0E0);
             tempBtn.setTextColor(0xFFFFFFFF);
             tempBtn.setOnClickListener(v -> showValueEditDialog("Temperature", index, true, graphView));
@@ -417,6 +417,12 @@ public class MainActivity extends AppCompatActivity {
         input.setText(String.valueOf(isTemp ? point.temperature : point.fanPercent));
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         input.setSelectAllOnFocus(true);
+        // Set fixed width for temperature input to make it more compact
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            isTemp ? 180 : android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        input.setLayoutParams(params);
         layout.addView(input);
 
         builder.setView(layout);
@@ -442,7 +448,21 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "Fan speed must be 0-100%", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    // Enforce monotonic: can't go below previous point
+                    int minFan = (pointIndex > 0) ? points.get(pointIndex - 1).fanPercent : 0;
+                    if (value < minFan) {
+                        Toast.makeText(this, "Fan speed must be at least " + minFan + "%", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    // Update point and push subsequent points up if needed
                     point.fanPercent = value;
+                    for (int i = pointIndex + 1; i < points.size(); i++) {
+                        if (points.get(i).fanPercent < value) {
+                            points.get(i).fanPercent = value;
+                        } else {
+                            break;
+                        }
+                    }
                 }
 
                 graphView.invalidate();

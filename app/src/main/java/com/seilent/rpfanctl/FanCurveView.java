@@ -284,36 +284,66 @@ public class FanCurveView extends View {
     }
 
     private void drawCurveFill(Canvas canvas) {
-        if (points.size() < 2) return;
+        if (points.size() < 1) return;
 
-        Path path = new Path();
+        // Save canvas state
+        canvas.save();
+
+        // Create the clip path (the curve itself)
+        Path clipPath = new Path();
         Preset.TempPoint first = points.get(0);
-        path.moveTo(tempToX(first.temperature), fanToY(first.fanPercent));
+
+        // Start from left edge (0°C) with first point's fan value
+        clipPath.moveTo(tempToX(MIN_TEMP), fanToY(first.fanPercent));
+        clipPath.lineTo(tempToX(first.temperature), fanToY(first.fanPercent));
 
         for (int i = 1; i < points.size(); i++) {
             Preset.TempPoint point = points.get(i);
-            path.lineTo(tempToX(point.temperature), fanToY(point.fanPercent));
+            clipPath.lineTo(tempToX(point.temperature), fanToY(point.fanPercent));
         }
 
-        // Close path to bottom for fill
-        path.lineTo(tempToX(points.get(points.size() - 1).temperature), graphArea.bottom);
-        path.lineTo(tempToX(points.get(0).temperature), graphArea.bottom);
-        path.close();
+        // Extend to right edge (100°C) with last point's fan value
+        Preset.TempPoint last = points.get(points.size() - 1);
+        clipPath.lineTo(tempToX(MAX_TEMP), fanToY(last.fanPercent));
 
-        canvas.drawPath(path, fillPaint);
+        // Continue to bottom-right corner
+        clipPath.lineTo(tempToX(MAX_TEMP), graphArea.bottom);
+
+        // Go to bottom-left corner
+        clipPath.lineTo(tempToX(MIN_TEMP), graphArea.bottom);
+
+        // Close back to starting point
+        clipPath.close();
+
+        // Clip to the curve path
+        canvas.clipPath(clipPath);
+
+        // Draw a simple rectangle covering the entire graph area
+        // This will only be visible where the clip allows it (under the curve)
+        canvas.drawRect(graphArea.left, graphArea.top, graphArea.right, graphArea.bottom, fillPaint);
+
+        // Restore canvas state
+        canvas.restore();
     }
 
     private void drawCurve(Canvas canvas) {
-        if (points.size() < 2) return;
+        if (points.size() < 1) return;
 
         Path path = new Path();
         Preset.TempPoint first = points.get(0);
-        path.moveTo(tempToX(first.temperature), fanToY(first.fanPercent));
+
+        // Start from left edge (0°C) with first point's fan value
+        path.moveTo(tempToX(MIN_TEMP), fanToY(first.fanPercent));
+        path.lineTo(tempToX(first.temperature), fanToY(first.fanPercent));
 
         for (int i = 1; i < points.size(); i++) {
             Preset.TempPoint point = points.get(i);
             path.lineTo(tempToX(point.temperature), fanToY(point.fanPercent));
         }
+
+        // Extend to right edge (100°C) with last point's fan value
+        Preset.TempPoint last = points.get(points.size() - 1);
+        path.lineTo(tempToX(MAX_TEMP), fanToY(last.fanPercent));
 
         canvas.drawPath(path, curvePaint);
     }
@@ -445,9 +475,24 @@ public class FanCurveView extends View {
                 points.get(selectedPointIndex + 1).temperature - 1 : MAX_TEMP;
         newTemp = Math.max(minTemp, Math.min(maxTemp, newTemp));
 
-        // Update point
+        // Enforce monotonic fan speed constraint
+        // Left point can push right points up, but right point cannot affect left points
+        int minFan = (selectedPointIndex > 0) ? points.get(selectedPointIndex - 1).fanPercent : MIN_FAN;
+        newFan = Math.max(minFan, newFan);  // Can't go below previous point
+
+        // Update selected point first
         points.get(selectedPointIndex).temperature = newTemp;
         points.get(selectedPointIndex).fanPercent = newFan;
+
+        // Push behavior: only left-to-right pushing allowed
+        // If dragging a point higher than points to its right, push them up
+        for (int i = selectedPointIndex + 1; i < points.size(); i++) {
+            if (points.get(i).fanPercent < newFan) {
+                points.get(i).fanPercent = newFan;
+            } else {
+                break; // Stop if we hit a point that's already higher
+            }
+        }
 
         invalidate();
 

@@ -17,31 +17,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Instructions -->
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Drag points on the graph to edit the fan curve"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginBottom="12dp" />
-
             <!-- Fan Curve Graph View -->
             <com.seilent.rpfanctl.FanCurveView
                 android:id="@+id/fan_curve_graph"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="400dp" />
-
-            <!-- Helper Text -->
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Points are automatically sorted by temperature"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:gravity="center"
-                android:layout_marginTop="8dp" />
         </LinearLayout>
     </ScrollView>
 
@@ -71,15 +52,6 @@
                 android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Edit Points Header -->
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edit Points"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="8dp" />
-
         <!-- Point Edit Buttons Container (scrollable) -->
         <ScrollView
             android:layout_width="match_parent"
@@ -94,26 +66,28 @@
                 android:orientation="vertical" />
         </ScrollView>
 
-        <!-- Action Buttons at bottom -->
+        <!-- Action Buttons at bottom (horizontal) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_save"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Save"
-                style="@style/Widget.Material3.Button.UnelevatedButton" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_cancel"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Cancel"
                 style="@style/Widget.Material3.Button.OutlinedButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_save"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Save"
+                style="@style/Widget.Material3.Button.UnelevatedButton" />
         </LinearLayout>
     </LinearLayout>
 
