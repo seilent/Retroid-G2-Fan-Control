@@ -376,6 +376,9 @@ public class FanCurveView extends View {
             touchStartX = x;
             touchStartY = y;
             invalidate();
+            if (onPointSelectedListener != null) {
+                onPointSelectedListener.onPointSelected(selectedPointIndex);
+            }
         }
     }
 
@@ -433,6 +436,10 @@ public class FanCurveView extends View {
     private void handleActionUp() {
         isDragging = false;
         hasMovedBeyondSlop = false;
+        if (onPointSelectedListener != null) {
+            onPointSelectedListener.onPointDeselected();
+        }
+        selectedPointIndex = -1;
         invalidate();
     }
 
@@ -468,9 +475,23 @@ public class FanCurveView extends View {
         this.onPointChangedListener = listener;
     }
 
+    public void setOnPointSelectedListener(OnPointSelectedListener listener) {
+        this.onPointSelectedListener = listener;
+    }
+
+    public int getSelectedPointIndex() {
+        return selectedPointIndex;
+    }
+
     public interface OnPointChangedListener {
         void onPointChanged(int index, int temperature, int fanPercent);
     }
 
+    public interface OnPointSelectedListener {
+        void onPointSelected(int index);
+        void onPointDeselected();
+    }
+
     public OnPointChangedListener onPointChangedListener;
+    private OnPointSelectedListener onPointSelectedListener;
 }

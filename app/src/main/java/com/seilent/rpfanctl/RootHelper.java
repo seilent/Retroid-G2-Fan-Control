@@ -135,4 +135,22 @@ public class RootHelper {
     public static void setCurrentPreset(String name) {
         executeShell("sed -i 's|^CURRENT_PRESET=.*|CURRENT_PRESET=" + name + "|' " + STATE_FILE);
     }
+
+    public static void setCurrentPreset(String name, String uuid) {
+        executeShell("sed -i 's|^CURRENT_PRESET=.*|CURRENT_PRESET=" + name + "|' " + STATE_FILE);
+        executeShell("sed -i 's|^CURRENT_PRESET_UUID=.*|CURRENT_PRESET_UUID=" + uuid + "|' " + STATE_FILE);
+    }
+
+    public static String getCurrentPresetUuid() {
+        String state = readFile(STATE_FILE);
+        if (state != null) {
+            String[] lines = state.split("\n");
+            for (String line : lines) {
+                if (line.startsWith("CURRENT_PRESET_UUID=")) {
+                    return line.substring(19).trim();
+                }
+            }
+        }
+        return null;
+    }
 }

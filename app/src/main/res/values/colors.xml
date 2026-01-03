@@ -57,21 +57,25 @@
     <color name="md_theme_dark_surfaceVariant">#414942</color>
     <color name="md_theme_dark_onSurfaceVariant">#C1C9C2</color>
 
+    <!-- Light mode - use primary green -->
     <color name="fan_curve_light_background">#F5F5F5</color>
     <color name="fan_curve_light_grid">#E0E0E0</color>
     <color name="fan_curve_light_axis">#666666</color>
     <color name="fan_curve_light_text">#666666</color>
     <color name="fan_curve_light_point">#FFFFFF</color>
-    <color name="fan_curve_light_curve">#2196F3</color>
-    <color name="fan_curve_light_fill">#402196F3</color>
+    <color name="fan_curve_light_curve">#006C4C</color>
+    <color name="fan_curve_light_fill">#40006C4C</color>
+    <color name="fan_curve_light_highlight">#89F8C7</color>
 
+    <!-- Dark mode - use teal-green -->
     <color name="fan_curve_dark_background">#1E1E1E</color>
     <color name="fan_curve_dark_grid">#333333</color>
     <color name="fan_curve_dark_axis">#888888</color>
     <color name="fan_curve_dark_text">#AAAAAA</color>
     <color name="fan_curve_dark_point">#E0E0E0</color>
-    <color name="fan_curve_dark_curve">#4FC3F7</color>
-    <color name="fan_curve_dark_fill">#504FC3F7</color>
+    <color name="fan_curve_dark_curve">#6CDBAC</color>
+    <color name="fan_curve_dark_fill">#506CDBAC</color>
+    <color name="fan_curve_dark_highlight">#005138</color>
 
     <color name="fan_icon_background">#363F3E</color>
     <color name="fan_icon_screw_hole">#B6B7B7</color>

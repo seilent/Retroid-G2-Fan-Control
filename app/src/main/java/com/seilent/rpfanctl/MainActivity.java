@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private MaterialTextView controlLabel;
     private FloatingActionButton fabAddPreset;
     private String currentPresetUuid;
+    private List<Button> highlightedButtons = new ArrayList<>();
+    private int currentlyHighlightedIndex = -1;
     private boolean isProgrammaticChange = false;
 
     private Handler statusUpdateHandler;
@@ -119,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        syncCurrentPresetFromDaemon();
         updateStatus();
     }
 
@@ -132,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
         customControlSwitch.setChecked(isCustomEnabled);
         updateControlLabel(isCustomEnabled);
         isProgrammaticChange = false;
+
+        syncCurrentPresetFromDaemon();
+        lastPresetChangeTime = System.currentTimeMillis();
         updateStatus();
     }
 
@@ -161,9 +168,8 @@ public class MainActivity extends AppCompatActivity {
 
         RootHelper.setFanCurve(preset.getPoints());
         RootHelper.setFanControlEnabled(true);
-        RootHelper.setCurrentPreset(preset.getName());
+        RootHelper.setCurrentPreset(preset.getName(), preset.getUuid());
 
-        // Mark when preset changed so we skip temp updates briefly
         lastPresetChangeTime = System.currentTimeMillis();
 
         requestTileUpdate();
@@ -181,6 +187,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestTileUpdate() {
         TileService.requestListeningState(this, new ComponentName(this, FanTileService.class));
+    }
+
+    private void syncCurrentPresetFromDaemon() {
+        String daemonUuid = RootHelper.getCurrentPresetUuid();
+        if (daemonUuid != null) {
+            for (Preset p : presets) {
+                if (p.getUuid().equals(daemonUuid)) {
+                    currentPresetUuid = p.getUuid();
+                    presetAdapter.setCurrentPreset(currentPresetUuid);
+                    prefs.edit().putString(KEY_CURRENT_PRESET, p.toJson()).apply();
+                    return;
+                }
+            }
+        }
+
+        String daemonName = RootHelper.getCurrentPreset();
+        if (daemonName != null) {
+            for (Preset p : presets) {
+                if (p.getName().equals(daemonName)) {
+                    currentPresetUuid = p.getUuid();
+                    presetAdapter.setCurrentPreset(currentPresetUuid);
+                    prefs.edit().putString(KEY_CURRENT_PRESET, p.toJson()).apply();
+                    return;
+                }
+            }
+        }
     }
 
     private ArrayList<Preset> loadPresets() {
@@ -216,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putString(KEY_CURRENT_PRESET, preset.toJson()).apply();
 
         RootHelper.setFanCurve(preset.getPoints());
-        RootHelper.setCurrentPreset(preset.getName());
+        RootHelper.setCurrentPreset(preset.getName(), preset.getUuid());
 
         lastPresetChangeTime = System.currentTimeMillis();
 
@@ -252,16 +284,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDeleteDialog(int position) {
-        new AlertDialog.Builder(this)
-            .setTitle("Delete Preset")
-            .setMessage("Delete " + presets.get(position).getName() + "?")
-            .setPositiveButton("Delete", (dialog, which) -> {
-                presets.remove(position);
-                savePresets();
-                refreshPresetList();
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
+        Preset presetToDelete = presets.get(position);
+        boolean isActive = presetToDelete.getUuid().equals(currentPresetUuid);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle("Delete Preset");
+
+        if (isActive) {
+            builder.setMessage("Delete " + presetToDelete.getName() + "?\n\nActive preset will switch to Default.");
+        } else {
+            builder.setMessage("Delete " + presetToDelete.getName() + "?");
+        }
+
+        builder.setPositiveButton("Delete", (dialog, which) -> {
+            presets.remove(position);
+            savePresets();
+
+            if (isActive) {
+                Preset defaultPreset = presets.get(0);
+                currentPresetUuid = defaultPreset.getUuid();
+                presetAdapter.setCurrentPreset(currentPresetUuid);
+                prefs.edit().putString(KEY_CURRENT_PRESET, defaultPreset.toJson()).apply();
+
+                if (RootHelper.isFanControlEnabled()) {
+                    RootHelper.setFanCurve(defaultPreset.getPoints());
+                    RootHelper.setCurrentPreset(defaultPreset.getName(), defaultPreset.getUuid());
+                }
+            }
+
+            refreshPresetList();
+        })
+        .setNegativeButton("Cancel", null)
+        .show();
     }
 
     private void showAddPresetDialog(int editPosition) {
@@ -293,6 +347,18 @@ public class MainActivity extends AppCompatActivity {
 
         graphView.setOnPointChangedListener((index, temp, fan) -> {
             updatePointEditButtons(pointEditContainer, graphView);
+        });
+
+        graphView.setOnPointSelectedListener(new FanCurveView.OnPointSelectedListener() {
+            @Override
+            public void onPointSelected(int index) {
+                highlightButtonRow(index);
+            }
+
+            @Override
+            public void onPointDeselected() {
+                clearAllHighlights();
+            }
         });
 
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -344,6 +410,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updatePointEditButtons(LinearLayout container, FanCurveView graphView) {
         container.removeAllViews();
+        highlightedButtons.clear();
 
         int spacingXs = getResources().getDimensionPixelSize(R.dimen.spacing_xs);
         int spacingSm = getResources().getDimensionPixelSize(R.dimen.spacing_sm);
@@ -362,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
             row.setPadding(0, spacingXs, 0, spacingXs);
 
             Button tempBtn = createValueButton(point.temperature + "°", buttonBgColor, buttonTextColor);
+            tempBtn.setTag("temp_" + i);
             tempBtn.setOnClickListener(v -> showValueEditDialog("Temperature", index, true, graphView));
             row.addView(tempBtn);
 
@@ -372,17 +440,24 @@ public class MainActivity extends AppCompatActivity {
             row.addView(arrow);
 
             Button fanBtn = createValueButton(point.fanPercent + "%", buttonBgColor, buttonTextColor);
+            fanBtn.setTag("fan_" + i);
             fanBtn.setOnClickListener(v -> showValueEditDialog("Fan Speed", index, false, graphView));
             row.addView(fanBtn);
 
             container.addView(row);
+
+            highlightedButtons.add(tempBtn);
+            highlightedButtons.add(fanBtn);
+        }
+
+        if (currentlyHighlightedIndex >= 0) {
+            highlightButtonRow(currentlyHighlightedIndex);
         }
     }
 
     private Button createValueButton(String text, int bgColor, int textColor) {
         Button btn = new Button(this, null, android.R.attr.buttonBarButtonStyle);
         btn.setText(text);
-        btn.setBackgroundColor(bgColor);
         btn.setTextColor(textColor);
         btn.setPadding(
             getResources().getDimensionPixelSize(R.dimen.spacing_sm),
@@ -393,6 +468,13 @@ public class MainActivity extends AppCompatActivity {
         btn.setMinimumHeight(
             getResources().getDimensionPixelSize(R.dimen.touch_target_min)
         );
+
+        float cornerRadius = 4 * getResources().getDisplayMetrics().density;
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(bgColor);
+        drawable.setCornerRadius(cornerRadius);
+        btn.setBackground(drawable);
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
             0,
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -408,6 +490,50 @@ public class MainActivity extends AppCompatActivity {
         }
         int nightMode = getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
         return nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    private void highlightButtonRow(int index) {
+        for (Button btn : highlightedButtons) {
+            resetButtonBackground(btn);
+        }
+
+        int highlightColor = getColor(isDarkMode() ?
+            R.color.fan_curve_dark_curve :
+            R.color.fan_curve_light_curve);
+        int strokeWidth = (int) (2 * getResources().getDisplayMetrics().density);
+        float cornerRadius = 4 * getResources().getDisplayMetrics().density;
+
+        for (Button btn : highlightedButtons) {
+            String tag = (String) btn.getTag();
+            if (tag != null && tag.endsWith("_" + index)) {
+                GradientDrawable drawable = new GradientDrawable();
+                drawable.setColor(getColor(isDarkMode() ?
+                    R.color.md_theme_dark_surfaceVariant :
+                    R.color.md_theme_light_surfaceVariant));
+                drawable.setStroke(strokeWidth, highlightColor);
+                drawable.setCornerRadius(cornerRadius);
+                btn.setBackground(drawable);
+            }
+        }
+        currentlyHighlightedIndex = index;
+    }
+
+    private void clearAllHighlights() {
+        for (Button btn : highlightedButtons) {
+            resetButtonBackground(btn);
+        }
+        currentlyHighlightedIndex = -1;
+    }
+
+    private void resetButtonBackground(Button btn) {
+        int bgColor = getColor(isDarkMode() ?
+            R.color.md_theme_dark_surfaceVariant :
+            R.color.md_theme_light_surfaceVariant);
+        float cornerRadius = 4 * getResources().getDisplayMetrics().density;
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(bgColor);
+        drawable.setCornerRadius(cornerRadius);
+        btn.setBackground(drawable);
     }
 
     private void showValueEditDialog(String title, int pointIndex, boolean isTemp, FanCurveView graphView) {
