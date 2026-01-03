@@ -53,10 +53,17 @@ public class MainActivity extends AppCompatActivity {
     private Handler statusUpdateHandler;
     private Runnable statusUpdateRunnable;
 
+    // Track when preset was last changed to skip temp updates briefly
+    private long lastPresetChangeTime = 0;
+    private static final long TEMP_UPDATE_DELAY_MS = 1000;  // Skip temp updates for 1s after preset change
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize timestamp to skip temp updates on app launch
+        lastPresetChangeTime = System.currentTimeMillis();
 
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         presets = loadPresets();
@@ -164,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
         RootHelper.setFanControlEnabled(true);
         RootHelper.setCurrentPreset(preset.getName());
 
+        // Mark when preset changed so we skip temp updates briefly
+        lastPresetChangeTime = System.currentTimeMillis();
+
         requestTileUpdate();
         Toast.makeText(this, "Custom fan control enabled", Toast.LENGTH_SHORT).show();
         updateStatus();
@@ -215,6 +225,9 @@ public class MainActivity extends AppCompatActivity {
 
         RootHelper.setFanCurve(preset.getPoints());
         RootHelper.setCurrentPreset(preset.getName());
+
+        // Mark when preset changed so we skip temp updates briefly
+        lastPresetChangeTime = System.currentTimeMillis();
 
         Toast.makeText(this, "Selected: " + preset.getName(), Toast.LENGTH_SHORT).show();
         presetAdapter.notifyDataSetChanged();
@@ -516,21 +529,27 @@ public class MainActivity extends AppCompatActivity {
     private void updateStatus() {
         int duty = RootHelper.getFanDuty();
         int percent = Preset.dutyToPercent(duty);
-        int temp = RootHelper.getCpuTemp() / 1000;
 
-        // Update separate displays
-        temperatureDisplay.setText(temp + "°C");
-        fanSpeedDisplay.setText(percent + "%");
+        // Skip temperature update if we just changed preset (within 2 seconds)
+        long timeSincePresetChange = System.currentTimeMillis() - lastPresetChangeTime;
+        boolean skipTempUpdate = timeSincePresetChange < TEMP_UPDATE_DELAY_MS;
 
-        // Update temperature text color based on threshold
-        int tempColor;
-        if (temp >= 80) {
-            tempColor = getColor(R.color.md_theme_light_error);
-        } else if (temp >= 60) {
-            tempColor = getColor(R.color.md_theme_light_primary);
-        } else {
-            tempColor = getColor(R.color.md_theme_light_secondary);
+        if (!skipTempUpdate) {
+            int temp = RootHelper.getCpuTemp() / 1000;
+            temperatureDisplay.setText(temp + "°C");
+
+            // Update temperature text color based on threshold
+            int tempColor;
+            if (temp >= 80) {
+                tempColor = getColor(R.color.md_theme_light_error);
+            } else if (temp >= 60) {
+                tempColor = getColor(R.color.md_theme_light_primary);
+            } else {
+                tempColor = getColor(R.color.md_theme_light_secondary);
+            }
+            temperatureDisplay.setTextColor(tempColor);
         }
-        temperatureDisplay.setTextColor(tempColor);
+
+        fanSpeedDisplay.setText(percent + "%");
     }
 }
