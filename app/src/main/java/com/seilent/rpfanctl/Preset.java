@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 public class Preset {
     private String name;
+    private String uuid;
     private List<TempPoint> points;
 
     public static class TempPoint {
@@ -30,6 +32,14 @@ public class Preset {
     public Preset(String name, List<TempPoint> points) {
         this.name = name;
         this.points = points;
+        this.uuid = UUID.randomUUID().toString();
+        Collections.sort(this.points, Comparator.comparingInt(TempPoint::getTemperature));
+    }
+
+    private Preset(String name, List<TempPoint> points, String uuid) {
+        this.name = name;
+        this.points = points;
+        this.uuid = uuid;
         Collections.sort(this.points, Comparator.comparingInt(TempPoint::getTemperature));
     }
 
@@ -39,11 +49,15 @@ public class Preset {
         points.add(new TempPoint(50, 10));
         points.add(new TempPoint(70, 15));
         points.add(new TempPoint(80, 20));
-        return new Preset("Default", points);
+        return new Preset("Default", points, "550e8400-e29b-41d4-a716-446655440000");
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public List<TempPoint> getPoints() {
@@ -75,6 +89,7 @@ public class Preset {
     public String toJson() {
         try {
             JSONObject json = new JSONObject();
+            json.put("uuid", uuid);
             json.put("name", name);
             JSONArray array = new JSONArray();
             for (TempPoint point : points) {
@@ -94,13 +109,23 @@ public class Preset {
         try {
             JSONObject json = new JSONObject(jsonStr);
             String name = json.getString("name");
+
+            // Handle backward compatibility: UUID field is optional
+            String uuid;
+            if (json.has("uuid")) {
+                uuid = json.getString("uuid");
+            } else {
+                // Generate new UUID for old presets without one
+                uuid = UUID.randomUUID().toString();
+            }
             JSONArray array = json.getJSONArray("points");
             List<TempPoint> points = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
                 JSONObject p = array.getJSONObject(i);
                 points.add(new TempPoint(p.getInt("temp"), p.getInt("fan")));
             }
-            return new Preset(name, points);
+            // Use private constructor to preserve UUID
+            return new Preset(name, points, uuid);
         } catch (JSONException e) {
             return createDefault();
         }
@@ -117,12 +142,24 @@ public class Preset {
         return name + " (max " + maxFan + "%)";
     }
 
+    public String getCurveDetails() {
+        // Return plain text - styling is handled by PresetAdapter with SpannableString
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < points.size(); i++) {
+            if (i > 0) sb.append("  ");
+            TempPoint point = points.get(i);
+            sb.append(point.temperature).append("°C/").append(point.fanPercent).append("%");
+        }
+        return sb.toString();
+    }
+
     public static Preset fromUserInput(String name, int t1, int f1, int t2, int f2, int t3, int f3, int t4, int f4) {
         List<TempPoint> points = new ArrayList<>();
         if (t1 > 0 && f1 > 0) points.add(new TempPoint(t1, f1));
         if (t2 > 0 && f2 > 0) points.add(new TempPoint(t2, f2));
         if (t3 > 0 && f3 > 0) points.add(new TempPoint(t3, f3));
         if (t4 > 0 && f4 > 0) points.add(new TempPoint(t4, f4));
-        return new Preset(name, points);
+        // Generate new UUID for user-created presets
+        return new Preset(name, points, UUID.randomUUID().toString());
     }
 }

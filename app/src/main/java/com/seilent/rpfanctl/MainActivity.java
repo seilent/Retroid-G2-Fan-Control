@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private MaterialSwitch customControlSwitch;
     private MaterialTextView controlLabel;
     private FloatingActionButton fabAddPreset;
-    private String currentPresetName;
+    private String currentPresetUuid;
     private boolean isProgrammaticChange = false;
 
     private Handler statusUpdateHandler;
@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
         String currentPresetJson = prefs.getString(KEY_CURRENT_PRESET, null);
         if (currentPresetJson != null) {
             Preset currentPreset = Preset.fromJson(currentPresetJson);
-            currentPresetName = currentPreset.getName();
+            currentPresetUuid = currentPreset.getUuid();
         } else {
-            currentPresetName = "Default";
+            currentPresetUuid = Preset.createDefault().getUuid();
         }
 
         // Initialize Material Components
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up RecyclerView with LinearLayoutManager
         presetRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        presetAdapter = new PresetAdapter(this, presets, currentPresetName);
+        presetAdapter = new PresetAdapter(this, presets, currentPresetUuid);
         presetRecyclerView.setAdapter(presetAdapter);
 
         // Set up click listeners
@@ -219,8 +219,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectPreset(Preset preset) {
-        currentPresetName = preset.getName();
-        presetAdapter.setCurrentPreset(currentPresetName);
+        currentPresetUuid = preset.getUuid();
+        presetAdapter.setCurrentPreset(currentPresetUuid);
         prefs.edit().putString(KEY_CURRENT_PRESET, preset.toJson()).apply();
 
         RootHelper.setFanCurve(preset.getPoints());
