@@ -3,14 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="?attr/colorSurface">
 
     <!-- LEFT PANEL: Fan Curve Graph only (75% width) -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.75"
-        android:padding="@dimen/spacing_lg">
+        android:padding="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_lg"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,7 +35,10 @@
         android:layout_height="match_parent"
         android:layout_weight="0.25"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_lg">
+        android:paddingStart="@dimen/spacing_lg"
+        android:paddingEnd="@dimen/spacing_lg"
+        android:paddingTop="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_lg">
 
         <!-- Preset Name Input -->
         <com.google.android.material.textfield.TextInputLayout
@@ -65,14 +71,19 @@
                 android:orientation="vertical" />
         </ScrollView>
 
-        <!-- Action Buttons at bottom (horizontal) -->
-        <LinearLayout style="@style/DialogButtonContainer">
+        <!-- Action Buttons at bottom -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/spacing_sm">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_cancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_sm"
                 android:text="Cancel"
                 style="@style/Widget.Material3.Button.OutlinedButton" />
 

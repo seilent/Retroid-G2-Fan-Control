@@ -336,54 +336,39 @@ public class MainActivity extends AppCompatActivity {
         // Get consistent spacing and colors from resources
         int spacingXs = getResources().getDimensionPixelSize(R.dimen.spacing_xs);
         int spacingSm = getResources().getDimensionPixelSize(R.dimen.spacing_sm);
-        int pointRowPaddingBottom = spacingSm;
-        int pointRowPaddingTop = spacingXs;
 
         // Get colors based on theme
         int buttonBgColor = getColor(isDarkMode() ? R.color.md_theme_dark_surfaceVariant : R.color.md_theme_light_surfaceVariant);
         int buttonTextColor = getColor(isDarkMode() ? R.color.md_theme_dark_onSurfaceVariant : R.color.md_theme_light_onSurfaceVariant);
-        int labelTextColor = getColor(android.R.color.darker_gray);
 
         List<Preset.TempPoint> points = graphView.getPoints();
         for (int i = 0; i < points.size(); i++) {
             Preset.TempPoint point = points.get(i);
             final int index = i;
 
+            // Single horizontal row with temp button, arrow, fan button
             LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.VERTICAL);
+            row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setPadding(0, pointRowPaddingTop, 0, pointRowPaddingBottom);
-
-            // Point label
-            TextView label = new TextView(this);
-            label.setText("Point " + (index + 1));
-            label.setTextAppearance(android.R.style.TextAppearance_Small);
-            label.setTextColor(labelTextColor);
-            row.addView(label);
-
-            // Values row
-            LinearLayout valuesRow = new LinearLayout(this);
-            valuesRow.setOrientation(LinearLayout.HORIZONTAL);
-            valuesRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            row.setPadding(0, spacingXs, 0, spacingSm);
 
             // Temperature button
             Button tempBtn = createValueButton(point.temperature + "°", buttonBgColor, buttonTextColor);
             tempBtn.setOnClickListener(v -> showValueEditDialog("Temperature", index, true, graphView));
-            valuesRow.addView(tempBtn);
+            row.addView(tempBtn);
 
             // Arrow
             TextView arrow = new TextView(this);
             arrow.setText("→");
             arrow.setTextAppearance(android.R.style.TextAppearance_Medium);
             arrow.setPadding(spacingSm, 0, spacingSm, 0);
-            valuesRow.addView(arrow);
+            row.addView(arrow);
 
             // Fan speed button
             Button fanBtn = createValueButton(point.fanPercent + "%", buttonBgColor, buttonTextColor);
             fanBtn.setOnClickListener(v -> showValueEditDialog("Fan Speed", index, false, graphView));
-            valuesRow.addView(fanBtn);
+            row.addView(fanBtn);
 
-            row.addView(valuesRow);
             container.addView(row);
         }
     }
@@ -402,6 +387,13 @@ public class MainActivity extends AppCompatActivity {
         btn.setMinimumHeight(
             getResources().getDimensionPixelSize(R.dimen.touch_target_min)
         );
+        // Ensure buttons have equal width when added to horizontal layout
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            0,  // width = 0 for weight to work
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            1.0f  // weight = 1 for equal distribution
+        );
+        btn.setLayoutParams(params);
         return btn;
     }
 
