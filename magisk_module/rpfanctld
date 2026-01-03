@@ -1,0 +1,139 @@
+#!/system/bin/sh
+# RP Fan Control Daemon
+# Runs as root, monitors temperature and adjusts fan speed
+
+CONFIG_DIR="/data/adb/modules/rpfanctl"
+CONFIG_FILE="$CONFIG_DIR/fan_config"
+STATE_FILE="$CONFIG_DIR/fan_state"
+THERMAL_SYSFS="/sys/class/gpio5_pwm2/thermal"
+DUTY_SYSFS="/sys/class/gpio5_pwm2/duty"
+TEMP_SYSFS="/sys/class/thermal/thermal_zone0/temp"
+POLL_INTERVAL=2
+HYSTERESIS_CYCLES=3
+
+# Log function
+log_msg() {
+    echo "[$(date '+%H:%M:%S')] $1" >> "$CONFIG_DIR/daemon.log"
+}
+
+# Read current config
+get_config() {
+    if [ -f "$CONFIG_FILE" ]; then
+        . "$CONFIG_FILE"
+    fi
+}
+
+# Read current state
+get_state() {
+    if [ -f "$STATE_FILE" ]; then
+        . "$STATE_FILE"
+    fi
+}
+
+# Get CPU temperature in millidegrees
+get_temp() {
+    cat "$TEMP_SYSFS" 2>/dev/null || echo "0"
+}
+
+# Set fan duty cycle
+set_duty() {
+    echo "$1" > "$DUTY_SYSFS" 2>/dev/null
+}
+
+# Set thermal mode (0=manual, 1=auto)
+set_thermal_mode() {
+    echo "$1" > "$THERMAL_SYSFS" 2>/dev/null
+}
+
+# Find fan speed for given temperature
+# Format: TEMP1:FAN1,TEMP2:FAN2,...
+get_fan_for_temp() {
+    local temp=$1
+    local fan=0
+    local last_temp=-999
+    local last_fan=0
+
+    # Parse fan curve points
+    IFS=,
+    for point in $FAN_CURVE; do
+        local pt_temp=$(echo $point | cut -d: -f1)
+        local pt_fan=$(echo $point | cut -d: -f2)
+
+        if [ $temp -ge $pt_temp ]; then
+            last_temp=$pt_temp
+            last_fan=$pt_fan
+        else
+            break
+        fi
+    done
+
+    echo $last_fan
+}
+
+# Convert percentage to duty (0-100% -> 0-50000)
+pct_to_duty() {
+    echo $(($1 * 50000 / 100))
+}
+
+# Main daemon loop
+daemon_main() {
+    log_msg "Fan control daemon started"
+
+    CURRENT_FAN_PCT=0
+    PENDING_FAN_PCT=0
+    PENDING_COUNT=0
+
+    set_thermal_mode 0
+
+    while true; do
+        get_config
+        get_state
+
+        ENABLED_FROM_STATE=$(grep "^ENABLED=" "$STATE_FILE" 2>/dev/null | cut -d= -f2)
+        if [ "$ENABLED_FROM_STATE" != "1" ]; then
+            sleep 5
+            continue
+        fi
+
+        THERMAL=$(cat "$THERMAL_SYSFS" 2>/dev/null || echo "1")
+        if [ "$THERMAL" != "0" ]; then
+            log_msg "Thermal mode overridden to $THERMAL, resetting to manual"
+            set_thermal_mode 0
+        fi
+
+        TEMP_MILLI=$(get_temp)
+        TEMP_C=$((TEMP_MILLI / 1000))
+
+        FAN_PCT=$(get_fan_for_temp $TEMP_C)
+
+        if [ "$FAN_PCT" -eq "$CURRENT_FAN_PCT" ]; then
+            PENDING_FAN_PCT=0
+            PENDING_COUNT=0
+        elif [ "$FAN_PCT" -eq "$PENDING_FAN_PCT" ]; then
+            PENDING_COUNT=$((PENDING_COUNT + 1))
+            if [ $PENDING_COUNT -ge $HYSTERESIS_CYCLES ]; then
+                CURRENT_FAN_PCT=$PENDING_FAN_PCT
+                DUTY=$(pct_to_duty $CURRENT_FAN_PCT)
+                set_duty $DUTY
+                log_msg "Temp: ${TEMP_C}C -> Fan: ${CURRENT_FAN_PCT}% (Duty: ${DUTY})"
+                PENDING_COUNT=0
+            fi
+        else
+            PENDING_FAN_PCT=$FAN_PCT
+            PENDING_COUNT=1
+        fi
+
+        sleep $POLL_INTERVAL
+    done
+}
+
+# Handle signals
+cleanup() {
+    log_msg "Daemon stopping, reverting to stock"
+    set_thermal_mode 1
+    exit 0
+}
+
+trap cleanup SIGTERM SIGINT
+
+daemon_main

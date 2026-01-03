@@ -42,10 +42,6 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      - name: Copy APK to Magisk module
-        run: |
-          cp app/build/outputs/apk/release/app-release.apk magisk_module/RpFanCtl.apk
-
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
