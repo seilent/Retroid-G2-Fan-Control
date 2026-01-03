@@ -42,38 +42,29 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      - name: Get commit sha for version
-        id: commit
-        run: echo "SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Copy APK to Magisk module
         run: |
           cp app/build/outputs/apk/release/app-release.apk magisk_module/RpFanCtl.apk
 
-      - name: Create Magisk module zip
-        run: |
-          cd magisk_module
-          zip -r ../rpfanctl-module-${{ steps.commit.outputs.SHA }}.zip .
-
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: rpfanctl-${{ steps.commit.outputs.SHA }}-debug.apk
+          name: rpfanctl-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: rpfanctl-${{ steps.commit.outputs.SHA }}-release.apk
+          name: rpfanctl-release
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
       - name: Upload Magisk module
         uses: actions/upload-artifact@v4
         with:
-          name: rpfanctl-module-${{ steps.commit.outputs.SHA }}.zip
-          path: rpfanctl-module-${{ steps.commit.outputs.SHA }}.zip
+          name: rpfanctl-module
+          path: magisk_module/
           if-no-files-found: error
 
   # Create GitHub Release when tag is pushed
@@ -88,17 +79,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download release APK
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: rpfanctl-*-release.apk
-          merge-multiple: false
+          path: artifacts
 
-      - name: Download Magisk module
-        uses: actions/download-artifact@v4
-        with:
-          pattern: rpfanctl-module-*.zip
-          merge-multiple: false
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Prepare release files
+        run: |
+          # Rename APKs for release
+          find artifacts -name 'app-debug.apk' -exec cp {} rpfanctl-${{ steps.get_version.outputs.VERSION }}-debug.apk \;
+          find artifacts -name 'app-release.apk' -exec cp {} rpfanctl-${{ steps.get_version.outputs.VERSION }}-release.apk \;
+
+          # Create Magisk module zip
+          cd artifacts/rpfanctl-module-*
+          zip -r ../../rpfanctl-module-${{ steps.get_version.outputs.VERSION }}.zip .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
