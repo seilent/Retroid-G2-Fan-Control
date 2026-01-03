@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- 3-blade fan propeller -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M352.57,128c-28.09,0 -54.09,4.52 -77.06,12.86l12.41,-123.11c0.94,-9.37 -8.11,-17.86 -18.59,-16.55C189.63,10.13 128,77.64 128,159.43c0,28.09 4.52,54.09 12.86,77.06l-123.11,-12.41c-9.37,-0.94 -17.86,8.11 -16.55,18.59c10,79.7 77.51,141.33 159.3,141.33 28.09,0 54.09,-4.52 77.06,-12.86l-12.41,123.11c-1.05,10.43 8.11,18.93 18.59,17.62 79.7,-10 141.33,-77.51 141.33,-159.3 0,-28.09 -4.52,-54.09 -12.86,-77.06l123.11,12.41c10.44,1.05 18.93,-8.11 17.62,-18.59 -10,-79.7 -77.51,-141.33 -159.3,-141.33z"/>
+
+    <!-- Center circle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M256,288a32,32 0,1 1,32 -32a32,32 0,0 1,-32 32z"/>
+</vector>

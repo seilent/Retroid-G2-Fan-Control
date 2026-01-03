@@ -25,7 +25,7 @@
         <service
             android:name=".FanTileService"
             android:exported="true"
-            android:icon="@drawable/ic_fan"
+            android:icon="@drawable/ic_fan_tile"
             android:label="Fan Control"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
