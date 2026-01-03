@@ -10,9 +10,12 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
+        android:layout_weight="0.35"
         android:layout_gravity="center_vertical"
-        android:layout_margin="@dimen/spacing_lg"
+        android:layout_marginStart="@dimen/spacing_xl"
+        android:layout_marginEnd="@dimen/spacing_sm"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:layout_marginBottom="@dimen/spacing_sm"
         app:cardElevation="@dimen/elevation_md"
         app:cardCornerRadius="@dimen/corner_radius_lg"
         app:strokeWidth="0dp"
@@ -99,55 +102,61 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- RIGHT PANEL: Presets List (scrollable) -->
-    <ScrollView
+    <!-- RIGHT PANEL: Presets List -->
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.7"
-        android:fillViewport="true"
-        android:padding="@dimen/spacing_lg">
+        android:layout_weight="0.65"
+        android:orientation="vertical">
 
+        <!-- Sticky Header (outside scroll) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/header_padding_start"
+            android:paddingEnd="@dimen/spacing_lg"
+            android:paddingTop="@dimen/header_padding_top"
+            android:paddingBottom="@dimen/spacing_sm">
 
-            <!-- Presets Header -->
             <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Fan Presets"
                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginStart="@dimen/spacing_sm"
-                android:layout_marginBottom="@dimen/spacing_sm" />
+                android:textColor="?attr/colorOnSurface" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tap to select • Long press to edit"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginStart="@dimen/spacing_sm"
-                android:layout_marginBottom="@dimen/spacing_lg" />
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+        </LinearLayout>
 
-            <!-- Presets RecyclerView -->
+        <!-- Scrollable Content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:paddingStart="@dimen/header_padding_start"
+            android:paddingEnd="@dimen/spacing_lg"
+            android:paddingTop="0dp"
+            android:paddingBottom="@dimen/content_bottom_padding">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/preset_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="88dp"
                 android:clipToPadding="false"
-                android:paddingStart="@dimen/spacing_sm"
-                android:paddingEnd="@dimen/spacing_sm"
                 android:nestedScrollingEnabled="false" />
 
-            <!-- Spacer for FAB -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/spacing_xxl" />
-
-        </LinearLayout>
-    </ScrollView>
+        </ScrollView>
+    </LinearLayout>
 
     <!-- Floating Action Button (overlay) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -155,7 +164,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_margin="@dimen/spacing_xl"
+        android:layout_marginStart="@dimen/spacing_lg"
+        android:layout_marginEnd="@dimen/fab_margin_end"
+        android:layout_marginBottom="@dimen/content_bottom_padding"
         android:contentDescription="Add Preset"
         app:srcCompat="@android:drawable/ic_input_add"
         app:tint="?attr/colorOnPrimaryContainer"

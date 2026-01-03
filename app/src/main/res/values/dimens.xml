@@ -25,4 +25,10 @@
 
     <!-- Touch Target -->
     <dimen name="touch_target_min">48dp</dimen>
+
+    <!-- Layout-specific -->
+    <dimen name="header_padding_top">60dp</dimen>
+    <dimen name="header_padding_start">32dp</dimen>
+    <dimen name="content_bottom_padding">48dp</dimen>
+    <dimen name="fab_margin_end">32dp</dimen>
 </resources>
