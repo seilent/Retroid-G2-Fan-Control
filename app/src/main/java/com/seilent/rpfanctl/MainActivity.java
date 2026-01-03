@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView currentStatus;
     private Switch customControlSwitch;
     private String currentPresetName;
+    private boolean isProgrammaticChange = false;
 
     private Handler statusUpdateHandler;
     private Runnable statusUpdateRunnable;
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isCustomEnabled = RootHelper.isFanControlEnabled();
         customControlSwitch.setChecked(isCustomEnabled);
         customControlSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isProgrammaticChange) return;
             if (isChecked) {
                 enableCustomControl();
             } else {
@@ -94,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 updateStatus();
+                // Also refresh switch state in case it was changed via tile
+                isProgrammaticChange = true;
+                boolean isCustomEnabled = RootHelper.isFanControlEnabled();
+                customControlSwitch.setChecked(isCustomEnabled);
+                isProgrammaticChange = false;
                 statusUpdateHandler.postDelayed(this, 1000);
             }
         };
@@ -105,6 +112,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         statusUpdateHandler.post(statusUpdateRunnable);
+
+        // Refresh switch state in case it was changed via tile
+        isProgrammaticChange = true;
+        boolean isCustomEnabled = RootHelper.isFanControlEnabled();
+        customControlSwitch.setChecked(isCustomEnabled);
+        isProgrammaticChange = false;
+        updateStatus();
     }
 
     @Override
