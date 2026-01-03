@@ -2,6 +2,7 @@
 
 Custom fan control application for Retroid Pocket G2 devices.
 It's pretty much vibe coded, so only serves as concept.  
+DWYOR!
 
 
 ## Do note by using this, it seems will break the stock fan control app
