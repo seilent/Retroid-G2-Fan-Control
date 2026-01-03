@@ -53,16 +53,14 @@ public class MainActivity extends AppCompatActivity {
     private Handler statusUpdateHandler;
     private Runnable statusUpdateRunnable;
 
-    // Track when preset was last changed to skip temp updates briefly
     private long lastPresetChangeTime = 0;
-    private static final long TEMP_UPDATE_DELAY_MS = 1000;  // Skip temp updates for 1s after preset change
+    private static final long TEMP_UPDATE_DELAY_MS = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize timestamp to skip temp updates on app launch
         lastPresetChangeTime = System.currentTimeMillis();
 
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
@@ -76,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
             currentPresetUuid = Preset.createDefault().getUuid();
         }
 
-        // Initialize Material Components
         temperatureDisplay = findViewById(R.id.temperature_display);
         fanSpeedDisplay = findViewById(R.id.fan_speed_display);
         customControlSwitch = findViewById(R.id.custom_control_switch);
@@ -84,12 +81,10 @@ public class MainActivity extends AppCompatActivity {
         fabAddPreset = findViewById(R.id.fab_add_preset);
         presetRecyclerView = findViewById(R.id.preset_list);
 
-        // Set up RecyclerView with LinearLayoutManager
         presetRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         presetAdapter = new PresetAdapter(this, presets, currentPresetUuid);
         presetRecyclerView.setAdapter(presetAdapter);
 
-        // Set up click listeners
         presetAdapter.setOnItemClickListener(preset -> selectPreset(preset));
         presetAdapter.setOnItemLongClickListener(position -> {
             showEditDeleteDialog(position);
@@ -108,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Replace button with FAB
         fabAddPreset.setOnClickListener(v -> showAddPresetDialog(-1));
 
         statusUpdateHandler = new Handler(Looper.getMainLooper());
@@ -116,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 updateStatus();
-                // Also refresh switch state in case it was changed via tile
                 isProgrammaticChange = true;
                 boolean isCustomEnabled = RootHelper.isFanControlEnabled();
                 customControlSwitch.setChecked(isCustomEnabled);
@@ -134,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         statusUpdateHandler.post(statusUpdateRunnable);
 
-        // Refresh switch state in case it was changed via tile
         isProgrammaticChange = true;
         boolean isCustomEnabled = RootHelper.isFanControlEnabled();
         customControlSwitch.setChecked(isCustomEnabled);
@@ -226,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
         RootHelper.setFanCurve(preset.getPoints());
         RootHelper.setCurrentPreset(preset.getName());
 
-        // Mark when preset changed so we skip temp updates briefly
         lastPresetChangeTime = System.currentTimeMillis();
 
         Toast.makeText(this, "Selected: " + preset.getName(), Toast.LENGTH_SHORT).show();
@@ -337,7 +328,6 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.show();
 
-        // Set window layout after showing to fill screen with minimal padding
         android.view.Window window = dialog.getWindow();
         if (window != null) {
             android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -355,11 +345,9 @@ public class MainActivity extends AppCompatActivity {
     private void updatePointEditButtons(LinearLayout container, FanCurveView graphView) {
         container.removeAllViews();
 
-        // Get consistent spacing and colors from resources
         int spacingXs = getResources().getDimensionPixelSize(R.dimen.spacing_xs);
         int spacingSm = getResources().getDimensionPixelSize(R.dimen.spacing_sm);
 
-        // Get colors based on theme
         int buttonBgColor = getColor(isDarkMode() ? R.color.md_theme_dark_surfaceVariant : R.color.md_theme_light_surfaceVariant);
         int buttonTextColor = getColor(isDarkMode() ? R.color.md_theme_dark_onSurfaceVariant : R.color.md_theme_light_onSurfaceVariant);
 
@@ -368,25 +356,21 @@ public class MainActivity extends AppCompatActivity {
             Preset.TempPoint point = points.get(i);
             final int index = i;
 
-            // Single horizontal row with temp button, arrow, fan button
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(android.view.Gravity.CENTER_VERTICAL);
             row.setPadding(0, spacingXs, 0, spacingXs);
 
-            // Temperature button
             Button tempBtn = createValueButton(point.temperature + "°", buttonBgColor, buttonTextColor);
             tempBtn.setOnClickListener(v -> showValueEditDialog("Temperature", index, true, graphView));
             row.addView(tempBtn);
 
-            // Arrow
             TextView arrow = new TextView(this);
             arrow.setText("→");
             arrow.setTextAppearance(android.R.style.TextAppearance_Medium);
             arrow.setPadding(spacingSm, 0, spacingSm, 0);
             row.addView(arrow);
 
-            // Fan speed button
             Button fanBtn = createValueButton(point.fanPercent + "%", buttonBgColor, buttonTextColor);
             fanBtn.setOnClickListener(v -> showValueEditDialog("Fan Speed", index, false, graphView));
             row.addView(fanBtn);
@@ -409,11 +393,10 @@ public class MainActivity extends AppCompatActivity {
         btn.setMinimumHeight(
             getResources().getDimensionPixelSize(R.dimen.touch_target_min)
         );
-        // Ensure buttons have equal width when added to horizontal layout
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            0,  // width = 0 for weight to work
+            0,
             LinearLayout.LayoutParams.WRAP_CONTENT,
-            1.0f  // weight = 1 for equal distribution
+            1.0f
         );
         btn.setLayoutParams(params);
         return btn;
@@ -434,7 +417,6 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title + " - Point " + (pointIndex + 1));
 
-        // Use consistent padding from dimens
         int paddingXl = getResources().getDimensionPixelSize(R.dimen.spacing_xl);
         int paddingLg = getResources().getDimensionPixelSize(R.dimen.spacing_lg);
 
@@ -451,7 +433,6 @@ public class MainActivity extends AppCompatActivity {
         input.setText(String.valueOf(isTemp ? point.temperature : point.fanPercent));
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         input.setSelectAllOnFocus(true);
-        // Set consistent width for input
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
             getResources().getDimensionPixelSize(R.dimen.spacing_xl) * 5,
             android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -482,13 +463,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "Fan speed must be 0-100%", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    // Enforce monotonic: can't go below previous point
                     int minFan = (pointIndex > 0) ? points.get(pointIndex - 1).fanPercent : 0;
                     if (value < minFan) {
                         Toast.makeText(this, "Fan speed must be at least " + minFan + "%", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    // Update point and push subsequent points up if needed
                     point.fanPercent = value;
                     for (int i = pointIndex + 1; i < points.size(); i++) {
                         if (points.get(i).fanPercent < value) {
@@ -530,7 +509,6 @@ public class MainActivity extends AppCompatActivity {
         int duty = RootHelper.getFanDuty();
         int percent = Preset.dutyToPercent(duty);
 
-        // Skip temperature update if we just changed preset (within 2 seconds)
         long timeSincePresetChange = System.currentTimeMillis() - lastPresetChangeTime;
         boolean skipTempUpdate = timeSincePresetChange < TEMP_UPDATE_DELAY_MS;
 
@@ -538,7 +516,6 @@ public class MainActivity extends AppCompatActivity {
             int temp = RootHelper.getCpuTemp() / 1000;
             temperatureDisplay.setText(temp + "°C");
 
-            // Update temperature text color based on threshold
             int tempColor;
             if (temp >= 80) {
                 tempColor = getColor(R.color.md_theme_light_error);

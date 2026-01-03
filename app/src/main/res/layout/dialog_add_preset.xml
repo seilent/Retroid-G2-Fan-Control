@@ -37,7 +37,6 @@
         android:text="Add temperature points in ascending order"
         style="@style/TextHelperStyle" />
 
-    <!-- Point 1 -->
     <LinearLayout style="@style/EditPointRowStyle">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -86,7 +85,6 @@
             style="@style/TextUnitLabelStyle" />
     </LinearLayout>
 
-    <!-- Point 2 -->
     <LinearLayout style="@style/EditPointRowStyle">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -135,7 +133,6 @@
             style="@style/TextUnitLabelStyle" />
     </LinearLayout>
 
-    <!-- Point 3 -->
     <LinearLayout style="@style/EditPointRowStyle">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -184,7 +181,6 @@
             style="@style/TextUnitLabelStyle" />
     </LinearLayout>
 
-    <!-- Point 4 -->
     <LinearLayout style="@style/EditPointRowStyle">
 
         <com.google.android.material.textfield.TextInputLayout

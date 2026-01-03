@@ -6,7 +6,6 @@
     android:orientation="horizontal"
     android:background="?attr/colorSurface">
 
-    <!-- LEFT PANEL: Status Card (centered vertically) -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -28,7 +27,6 @@
             android:padding="@dimen/spacing_lg"
             android:gravity="center_horizontal">
 
-            <!-- App Title (no icon) -->
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -37,7 +35,6 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:layout_marginBottom="@dimen/spacing_xl" />
 
-            <!-- Temperature Display -->
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,7 +53,6 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="@dimen/spacing_xl" />
 
-            <!-- Fan Speed Display -->
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -75,7 +71,6 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="@dimen/spacing_xl" />
 
-            <!-- Custom Control Toggle -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -102,14 +97,12 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- RIGHT PANEL: Presets List -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.65"
         android:orientation="vertical">
 
-        <!-- Sticky Header (outside scroll) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -136,7 +129,6 @@
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
-        <!-- Scrollable Content -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -158,7 +150,6 @@
         </ScrollView>
     </LinearLayout>
 
-    <!-- Floating Action Button (overlay) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_preset"
         android:layout_width="wrap_content"

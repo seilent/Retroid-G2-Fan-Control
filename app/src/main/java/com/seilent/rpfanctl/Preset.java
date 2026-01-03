@@ -110,12 +110,10 @@ public class Preset {
             JSONObject json = new JSONObject(jsonStr);
             String name = json.getString("name");
 
-            // Handle backward compatibility: UUID field is optional
             String uuid;
             if (json.has("uuid")) {
                 uuid = json.getString("uuid");
             } else {
-                // Generate new UUID for old presets without one
                 uuid = UUID.randomUUID().toString();
             }
             JSONArray array = json.getJSONArray("points");
@@ -124,7 +122,6 @@ public class Preset {
                 JSONObject p = array.getJSONObject(i);
                 points.add(new TempPoint(p.getInt("temp"), p.getInt("fan")));
             }
-            // Use private constructor to preserve UUID
             return new Preset(name, points, uuid);
         } catch (JSONException e) {
             return createDefault();
@@ -143,7 +140,6 @@ public class Preset {
     }
 
     public String getCurveDetails() {
-        // Return plain text - styling is handled by PresetAdapter with SpannableString
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < points.size(); i++) {
             if (i > 0) sb.append("  ");
@@ -159,7 +155,6 @@ public class Preset {
         if (t2 > 0 && f2 > 0) points.add(new TempPoint(t2, f2));
         if (t3 > 0 && f3 > 0) points.add(new TempPoint(t3, f3));
         if (t4 > 0 && f4 > 0) points.add(new TempPoint(t4, f4));
-        // Generate new UUID for user-created presets
         return new Preset(name, points, UUID.randomUUID().toString());
     }
 }

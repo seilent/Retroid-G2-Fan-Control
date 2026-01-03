@@ -18,7 +18,6 @@
         android:padding="16dp"
         android:gravity="center_vertical">
 
-        <!-- Preset Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -42,7 +41,6 @@
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
-        <!-- Selection Indicator -->
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/preset_checkbox"
             android:layout_width="wrap_content"

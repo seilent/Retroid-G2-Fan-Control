@@ -9,7 +9,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FanControl">
 
-        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -21,7 +20,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Quick Settings Tile -->
         <service
             android:name=".FanTileService"
             android:exported="true"

@@ -80,7 +80,6 @@ public class RootHelper {
             try {
                 return Integer.parseInt(temp.trim());
             } catch (NumberFormatException e) {
-                // Ignore
             }
         }
         return 0;

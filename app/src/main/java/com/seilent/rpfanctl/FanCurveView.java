@@ -21,20 +21,16 @@ import java.util.Comparator;
 import java.util.List;
 
 public class FanCurveView extends View {
-    // Data Model
     private List<Preset.TempPoint> points;
 
-    // Axis Configuration
     private static final int MIN_TEMP = 0;
     private static final int MAX_TEMP = 100;
     private static final int MIN_FAN = 0;
     private static final int MAX_FAN = 100;
 
-    // Drawing Dimensions
     private RectF graphArea;
     private int paddingLeft, paddingTop, paddingRight, paddingBottom;
 
-    // Touch Handling
     private int selectedPointIndex = -1;
     private boolean isDragging = false;
     private boolean hasMovedBeyondSlop;
@@ -42,7 +38,6 @@ public class FanCurveView extends View {
     private float touchStartX, touchStartY;
     private static final int TOUCH_TOLERANCE_DP = 60;
 
-    // Visual Configuration
     private Paint gridPaint;
     private Paint axisPaint;
     private Paint curvePaint;
@@ -55,7 +50,6 @@ public class FanCurveView extends View {
     private int pointRadius;
     private int selectedPointRadius;
 
-    // Dark mode
     private boolean isDarkMode;
 
     public FanCurveView(Context context) {
@@ -76,33 +70,27 @@ public class FanCurveView extends View {
     private void init() {
         points = new ArrayList<>();
 
-        // Detect dark mode
         isDarkMode = isDarkMode();
 
-        // Set default points
         points.add(new Preset.TempPoint(20, 0));
         points.add(new Preset.TempPoint(50, 10));
         points.add(new Preset.TempPoint(70, 15));
         points.add(new Preset.TempPoint(80, 20));
 
-        // Calculate padding based on screen density (optimized for larger graphs)
         float density = getResources().getDisplayMetrics().density;
         paddingLeft = (int) (40 * density);
         paddingRight = (int) (12 * density);
         paddingTop = (int) (24 * density);
         paddingBottom = (int) (28 * density);
 
-        // Touch targets
         pointRadius = (int) (16 * density);
         selectedPointRadius = (int) (20 * density);
 
         touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
-        // Enable touch interaction
         setClickable(true);
         setFocusable(true);
 
-        // Initialize paints
         initPaints(density);
     }
 
@@ -110,7 +98,6 @@ public class FanCurveView extends View {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return getResources().getConfiguration().isNightModeActive();
         }
-        // Fallback for older SDKs
         int nightMode = getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
         return nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES;
     }
@@ -132,24 +119,20 @@ public class FanCurveView extends View {
         int curveColor = getColor(isDarkMode ? R.color.fan_curve_dark_curve : R.color.fan_curve_light_curve);
         int fillColor = getColor(isDarkMode ? R.color.fan_curve_dark_fill : R.color.fan_curve_light_fill);
 
-        // Background
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint.setColor(bgColor);
         backgroundPaint.setStyle(Paint.Style.FILL);
 
-        // Grid
         gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         gridPaint.setColor(gridColor);
         gridPaint.setStrokeWidth(1.5f * density);
         gridPaint.setStyle(Paint.Style.STROKE);
 
-        // Axis
         axisPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         axisPaint.setColor(axisColor);
         axisPaint.setStrokeWidth(2.5f * density);
         axisPaint.setStyle(Paint.Style.STROKE);
 
-        // Curve
         curvePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         curvePaint.setColor(curveColor);
         curvePaint.setStrokeWidth(3.5f * density);
@@ -157,12 +140,10 @@ public class FanCurveView extends View {
         curvePaint.setStrokeCap(Paint.Cap.ROUND);
         curvePaint.setStrokeJoin(Paint.Join.ROUND);
 
-        // Fill under curve
         fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         fillPaint.setColor(fillColor);
         fillPaint.setStyle(Paint.Style.FILL);
 
-        // Point
         pointPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         pointPaint.setColor(pointColor);
         pointPaint.setStyle(Paint.Style.FILL);
@@ -171,7 +152,6 @@ public class FanCurveView extends View {
             pointPaint.setShadowLayer(3 * density, 0, 0, Color.parseColor("#30000000"));
         }
 
-        // Selected Point
         selectedPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         selectedPointPaint.setColor(curveColor);
         selectedPointPaint.setStyle(Paint.Style.FILL);
@@ -179,7 +159,6 @@ public class FanCurveView extends View {
             selectedPointPaint.setShadowLayer(5 * density, 0, 0, Color.parseColor("#60000000"));
         }
 
-        // Text
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(textColor);
         textPaint.setTextSize(10 * density);
@@ -212,36 +191,27 @@ public class FanCurveView extends View {
             calculateGraphArea();
         }
 
-        // Draw background
         canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
 
-        // Draw grid
         drawGrid(canvas);
 
-        // Draw axes
         drawAxes(canvas);
 
-        // Draw axis labels
         drawAxisLabels(canvas);
 
-        // Draw fill under curve
         drawCurveFill(canvas);
 
-        // Draw curve line
         drawCurve(canvas);
 
-        // Draw points
         drawPoints(canvas);
     }
 
     private void drawGrid(Canvas canvas) {
-        // Vertical lines (temperature) - every 10°C
         for (int temp = MIN_TEMP; temp <= MAX_TEMP; temp += 10) {
             float x = tempToX(temp);
             canvas.drawLine(x, graphArea.top, x, graphArea.bottom, gridPaint);
         }
 
-        // Horizontal lines (fan %) - every 10% for square grid
         for (int fan = 0; fan <= MAX_FAN; fan += 10) {
             float y = fanToY(fan);
             canvas.drawLine(graphArea.left, y, graphArea.right, y, gridPaint);
@@ -249,17 +219,14 @@ public class FanCurveView extends View {
     }
 
     private void drawAxes(Canvas canvas) {
-        // Left axis (Y)
         canvas.drawLine(graphArea.left, graphArea.top, graphArea.left, graphArea.bottom, axisPaint);
 
-        // Bottom axis (X)
         canvas.drawLine(graphArea.left, graphArea.bottom, graphArea.right, graphArea.bottom, axisPaint);
     }
 
     private void drawAxisLabels(Canvas canvas) {
         textPaint.setTextAlign(Paint.Align.RIGHT);
 
-        // Y-axis labels (fan %) - every 10% for square grid
         for (int fan = 0; fan <= MAX_FAN; fan += 10) {
             float y = fanToY(fan);
             canvas.drawText(fan + "%", paddingLeft - 6, y + 3, textPaint);
@@ -267,7 +234,6 @@ public class FanCurveView extends View {
 
         textPaint.setTextAlign(Paint.Align.CENTER);
 
-        // X-axis labels (temperature)
         for (int temp = MIN_TEMP; temp <= MAX_TEMP; temp += 10) {
             float x = tempToX(temp);
             canvas.drawText(temp + "°", x, graphArea.bottom + paddingBottom - 6, textPaint);
@@ -277,14 +243,11 @@ public class FanCurveView extends View {
     private void drawCurveFill(Canvas canvas) {
         if (points.size() < 1) return;
 
-        // Save canvas state
         canvas.save();
 
-        // Create the clip path (the curve itself)
         Path clipPath = new Path();
         Preset.TempPoint first = points.get(0);
 
-        // Start from left edge (0°C) with first point's fan value
         clipPath.moveTo(tempToX(MIN_TEMP), fanToY(first.fanPercent));
         clipPath.lineTo(tempToX(first.temperature), fanToY(first.fanPercent));
 
@@ -293,27 +256,19 @@ public class FanCurveView extends View {
             clipPath.lineTo(tempToX(point.temperature), fanToY(point.fanPercent));
         }
 
-        // Extend to right edge (100°C) with last point's fan value
         Preset.TempPoint last = points.get(points.size() - 1);
         clipPath.lineTo(tempToX(MAX_TEMP), fanToY(last.fanPercent));
 
-        // Continue to bottom-right corner
         clipPath.lineTo(tempToX(MAX_TEMP), graphArea.bottom);
 
-        // Go to bottom-left corner
         clipPath.lineTo(tempToX(MIN_TEMP), graphArea.bottom);
 
-        // Close back to starting point
         clipPath.close();
 
-        // Clip to the curve path
         canvas.clipPath(clipPath);
 
-        // Draw a simple rectangle covering the entire graph area
-        // This will only be visible where the clip allows it (under the curve)
         canvas.drawRect(graphArea.left, graphArea.top, graphArea.right, graphArea.bottom, fillPaint);
 
-        // Restore canvas state
         canvas.restore();
     }
 
@@ -323,7 +278,6 @@ public class FanCurveView extends View {
         Path path = new Path();
         Preset.TempPoint first = points.get(0);
 
-        // Start from left edge (0°C) with first point's fan value
         path.moveTo(tempToX(MIN_TEMP), fanToY(first.fanPercent));
         path.lineTo(tempToX(first.temperature), fanToY(first.fanPercent));
 
@@ -332,7 +286,6 @@ public class FanCurveView extends View {
             path.lineTo(tempToX(point.temperature), fanToY(point.fanPercent));
         }
 
-        // Extend to right edge (100°C) with last point's fan value
         Preset.TempPoint last = points.get(points.size() - 1);
         path.lineTo(tempToX(MAX_TEMP), fanToY(last.fanPercent));
 
@@ -340,7 +293,6 @@ public class FanCurveView extends View {
     }
 
     private void drawPoints(Canvas canvas) {
-        // Draw border for all points
         pointPaint.setStyle(Paint.Style.STROKE);
         for (int i = 0; i < points.size(); i++) {
             Preset.TempPoint point = points.get(i);
@@ -349,7 +301,6 @@ public class FanCurveView extends View {
             canvas.drawCircle(x, y, pointRadius, pointPaint);
         }
 
-        // Fill points based on selection
         pointPaint.setStyle(Paint.Style.FILL);
         for (int i = 0; i < points.size(); i++) {
             Preset.TempPoint point = points.get(i);
@@ -358,7 +309,6 @@ public class FanCurveView extends View {
 
             if (i == selectedPointIndex) {
                 canvas.drawCircle(x, y, selectedPointRadius, selectedPointPaint);
-                // Draw border around selected point
                 pointPaint.setStyle(Paint.Style.STROKE);
                 canvas.drawCircle(x, y, selectedPointRadius, pointPaint);
                 pointPaint.setStyle(Paint.Style.FILL);
@@ -368,7 +318,6 @@ public class FanCurveView extends View {
         }
     }
 
-    // Coordinate transformation
     private float tempToX(int temp) {
         float ratio = (float) (temp - MIN_TEMP) / (MAX_TEMP - MIN_TEMP);
         return graphArea.left + ratio * graphArea.width();
@@ -391,7 +340,6 @@ public class FanCurveView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // Prevent parent from intercepting touch events when dragging points
         ViewParent parent = getParent();
         if (parent != null) {
             if (event.getAction() == MotionEvent.ACTION_DOWN || isDragging) {
@@ -437,57 +385,46 @@ public class FanCurveView extends View {
         float x = event.getX();
         float y = event.getY();
 
-        // Apply touch slop only at the start of dragging
         if (!hasMovedBeyondSlop) {
             float dx = x - touchStartX;
             float dy = y - touchStartY;
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
             if (distance < touchSlop) {
-                return; // Still within touch slop, ignore
+                return;
             }
             hasMovedBeyondSlop = true;
         }
 
-        // Constrain to graph area
         x = Math.max(graphArea.left, Math.min(graphArea.right, x));
         y = Math.max(graphArea.top, Math.min(graphArea.bottom, y));
 
-        // Convert to temp/fan values
         int newTemp = xToTemp(x);
         int newFan = yToFan(y);
 
-        // Clamp fan percentage
         newFan = Math.max(MIN_FAN, Math.min(MAX_FAN, newFan));
 
-        // Enforce ascending temperature order
         int minTemp = (selectedPointIndex > 0) ?
                 points.get(selectedPointIndex - 1).temperature + 1 : MIN_TEMP;
         int maxTemp = (selectedPointIndex < points.size() - 1) ?
                 points.get(selectedPointIndex + 1).temperature - 1 : MAX_TEMP;
         newTemp = Math.max(minTemp, Math.min(maxTemp, newTemp));
 
-        // Enforce monotonic fan speed constraint
-        // Left point can push right points up, but right point cannot affect left points
         int minFan = (selectedPointIndex > 0) ? points.get(selectedPointIndex - 1).fanPercent : MIN_FAN;
-        newFan = Math.max(minFan, newFan);  // Can't go below previous point
+        newFan = Math.max(minFan, newFan);
 
-        // Update selected point first
         points.get(selectedPointIndex).temperature = newTemp;
         points.get(selectedPointIndex).fanPercent = newFan;
 
-        // Push behavior: only left-to-right pushing allowed
-        // If dragging a point higher than points to its right, push them up
         for (int i = selectedPointIndex + 1; i < points.size(); i++) {
             if (points.get(i).fanPercent < newFan) {
                 points.get(i).fanPercent = newFan;
             } else {
-                break; // Stop if we hit a point that's already higher
+                break;
             }
         }
 
         invalidate();
 
-        // Notify listener
         if (onPointChangedListener != null) {
             onPointChangedListener.onPointChanged(selectedPointIndex, newTemp, newFan);
         }
@@ -517,7 +454,6 @@ public class FanCurveView extends View {
         return nearestIndex;
     }
 
-    // Public API
     public void setPoints(List<Preset.TempPoint> points) {
         this.points = new ArrayList<>(points);
         Collections.sort(this.points, Comparator.comparingInt(Preset.TempPoint::getTemperature));

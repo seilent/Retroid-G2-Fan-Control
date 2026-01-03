@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Existing colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Material 3 Light Theme Colors -->
     <color name="md_theme_light_primary">#006C4C</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#89F8C7</color>
@@ -32,7 +30,6 @@
     <color name="md_theme_light_surfaceVariant">#DDE4DF</color>
     <color name="md_theme_light_onSurfaceVariant">#414942</color>
 
-    <!-- Material 3 Dark Theme Colors -->
     <color name="md_theme_dark_primary">#6CDBAC</color>
     <color name="md_theme_dark_onPrimary">#003826</color>
     <color name="md_theme_dark_primaryContainer">#005138</color>
@@ -60,8 +57,6 @@
     <color name="md_theme_dark_surfaceVariant">#414942</color>
     <color name="md_theme_dark_onSurfaceVariant">#C1C9C2</color>
 
-    <!-- Fan Curve Graph Colors -->
-    <!-- Light mode graph colors -->
     <color name="fan_curve_light_background">#F5F5F5</color>
     <color name="fan_curve_light_grid">#E0E0E0</color>
     <color name="fan_curve_light_axis">#666666</color>
@@ -70,7 +65,6 @@
     <color name="fan_curve_light_curve">#2196F3</color>
     <color name="fan_curve_light_fill">#402196F3</color>
 
-    <!-- Dark mode graph colors -->
     <color name="fan_curve_dark_background">#1E1E1E</color>
     <color name="fan_curve_dark_grid">#333333</color>
     <color name="fan_curve_dark_axis">#888888</color>
@@ -79,7 +73,6 @@
     <color name="fan_curve_dark_curve">#4FC3F7</color>
     <color name="fan_curve_dark_fill">#504FC3F7</color>
 
-    <!-- Fan Icon Colors -->
     <color name="fan_icon_background">#363F3E</color>
     <color name="fan_icon_screw_hole">#B6B7B7</color>
     <color name="fan_icon_outer_ring">#DDDDDD</color>

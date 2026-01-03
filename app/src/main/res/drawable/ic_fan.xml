@@ -5,12 +5,10 @@
     android:viewportWidth="496.8"
     android:viewportHeight="496.8">
 
-    <!-- Background rounded square -->
     <path
         android:fillColor="#363F3E"
         android:pathData="M496,467.2c0,16-12.8,28.8-28.8,28.8H28.8C12.8,496,0,483.2,0,467.2V28.8C0,12.8,12.8,0,28.8,0H468c16,0,28.8,12.8,28.8,28.8v438.4H496z"/>
 
-    <!-- Corner screw holes -->
     <path
         android:fillColor="#B6B7B7"
         android:pathData="M44,51.2c-5.6,8-5.6,19.2,1.6,26.4s18.4,8,26.4,1.6L44,51.2z"/>
@@ -36,12 +34,23 @@
         android:fillColor="#B6B7B7"
         android:pathData="M48,448.8l28-28c5.6,8,5.6,19.2-1.6,26.4C67.2,454.4,56,455.2,48,448.8z"/>
 
-    <!-- Outer circle -->
+    <path
+        android:fillColor="#B6B7B7"
+        android:pathData="M452,444.8c5.6-8,5.6-19.2-1.6-26.4c-7.2-7.2-18.4-8-26.4-1.6L452,444.8z"/>
+    <path
+        android:fillColor="#B6B7B7"
+        android:pathData="M448,448.8l-28-28c-5.6,8-5.6,19.2,1.6,26.4C428.8,454.4,440,455.2,448,448.8z"/>
+    <path
+        android:fillColor="#B6B7B7"
+        android:pathData="M44,444.8c-5.6-8-5.6-19.2,1.6-26.4c7.2-7.2,18.4-8,26.4-1.6L44,444.8z"/>
+    <path
+        android:fillColor="#B6B7B7"
+        android:pathData="M48,448.8l28-28c5.6,8,5.6,19.2-1.6,26.4C67.2,454.4,56,455.2,48,448.8z"/>
+
     <path
         android:fillColor="#DDDDDD"
         android:pathData="M248,65.6c-100.8,0-182.4,81.6-182.4,182.4s81.6,182.4,182.4,182.4s182.4-81.6,182.4-182.4S348.8,65.6,248,65.6z"/>
 
-    <!-- Fan blades -->
     <path
         android:fillColor="#E8A615"
         android:pathData="M320.8,132c0,42.4-58.4,107.2-81.6,107.2c-24,0-51.2-65.6-51.2-107.2c0-42.4,19.2-53.6,43.2-53.6C254.4,78.4,320.8,89.6,320.8,132z"/>
@@ -70,7 +79,6 @@
         android:fillColor="#CC8C0D"
         android:pathData="M111.2,181.6c0.8,10.4,7.2,22.4,20.8,36.8c27.2,27.2,83.2,52,106.4,44c0.8-1.6,0.8-3.2,0.8-4.8c0-24-65.6-81.6-107.2-81.6C124,175.2,117.6,177.6,111.2,181.6z"/>
 
-    <!-- Center hub -->
     <path
         android:fillColor="#E8A615"
         android:pathData="M248,215.2c-18.08,0 -32.8,14.72 -32.8,32.8s14.72,32.8,32.8,32.8s32.8,-14.72,32.8,-32.8S266.08,215.2,248,215.2z"/>

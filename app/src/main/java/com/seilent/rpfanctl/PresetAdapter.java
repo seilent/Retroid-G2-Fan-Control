@@ -67,7 +67,6 @@ public class PresetAdapter extends RecyclerView.Adapter<PresetAdapter.PresetView
         Preset preset = presets.get(position);
         holder.bind(preset, preset.getUuid().equals(currentPresetUuid));
 
-        // Set up click listeners
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onItemClick(preset);
@@ -106,7 +105,6 @@ public class PresetAdapter extends RecyclerView.Adapter<PresetAdapter.PresetView
             presetDetails.setText(createStyledCurveDetails(preset.getCurveDetails()));
             checkBox.setChecked(isSelected);
 
-            // Update card appearance for selected state
             if (isSelected) {
                 cardView.setStrokeWidth(2);
                 cardView.setStrokeColor(cardView.getContext().getColor(
@@ -121,7 +119,6 @@ public class PresetAdapter extends RecyclerView.Adapter<PresetAdapter.PresetView
         private Spanned createStyledCurveDetails(String details) {
             SpannableString spannable = new SpannableString(details);
 
-            // Use theme colors
             int chipColor = ContextCompat.getColor(itemView.getContext(), R.color.md_theme_dark_surfaceVariant);
             int textColor = ContextCompat.getColor(itemView.getContext(), R.color.md_theme_dark_onSurfaceVariant);
 
@@ -131,20 +128,17 @@ public class PresetAdapter extends RecyclerView.Adapter<PresetAdapter.PresetView
             for (int i = 0; i < details.length(); i++) {
                 char c = details.charAt(i);
 
-                // Start of a chip (digit)
                 if (Character.isDigit(c) && !inChip) {
                     inChip = true;
                     chipStart = i;
                 }
 
-                // End of a chip (space after %)
                 if (c == ' ' && inChip) {
                     spannable.setSpan(new RoundedBackgroundSpan(chipColor, textColor), chipStart, i, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     inChip = false;
                 }
             }
 
-            // Handle last chip
             if (inChip) {
                 spannable.setSpan(new RoundedBackgroundSpan(chipColor, textColor), chipStart, details.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
@@ -174,11 +168,9 @@ public class PresetAdapter extends RecyclerView.Adapter<PresetAdapter.PresetView
                 float textWidth = paint.measureText(text, start, end);
                 RectF rect = new RectF(x, top + PADDING_Y, x + textWidth + PADDING_X * 2, bottom - PADDING_Y);
 
-                // Draw rounded background
                 paint.setColor(backgroundColor);
                 canvas.drawRoundRect(rect, CORNER_RADIUS, CORNER_RADIUS, paint);
 
-                // Draw text
                 paint.setColor(textColor);
                 canvas.drawText(text, start, end, x + PADDING_X, y, paint);
             }
