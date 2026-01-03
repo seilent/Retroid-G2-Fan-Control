@@ -95,7 +95,7 @@ jobs:
           find artifacts -name 'app-release.apk' -exec cp {} rpfanctl-${{ steps.get_version.outputs.VERSION }}-release.apk \;
 
           # Create Magisk module zip
-          cd artifacts/rpfanctl-module-*
+          cd artifacts/rpfanctl-module
           zip -r ../../rpfanctl-module-${{ steps.get_version.outputs.VERSION }}.zip .
 
       - name: Create GitHub Release
