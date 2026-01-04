@@ -12,8 +12,31 @@ public class RootHelper {
     private static final String CONFIG_FILE = MODULE_DIR + "/fan_config";
     private static final String STATE_FILE = MODULE_DIR + "/fan_state";
 
+    public static class PrerequisiteStatus {
+        public final boolean hasRoot;
+        public final boolean hasModule;
+        public final boolean isMet;
+
+        public PrerequisiteStatus(boolean hasRoot, boolean hasModule) {
+            this.hasRoot = hasRoot;
+            this.hasModule = hasModule;
+            this.isMet = hasRoot && hasModule;
+        }
+    }
+
     public static boolean isRootAvailable() {
         return executeShell("echo test") != null;
+    }
+
+    public static boolean isMagiskModuleInstalled() {
+        String result = executeShell("test -d " + MODULE_DIR + " && echo 'exists'");
+        return result != null && result.contains("exists");
+    }
+
+    public static PrerequisiteStatus validatePrerequisites() {
+        boolean hasRoot = isRootAvailable();
+        boolean hasModule = hasRoot && isMagiskModuleInstalled();
+        return new PrerequisiteStatus(hasRoot, hasModule);
     }
 
     public static String executeShell(String command) {

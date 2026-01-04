@@ -3,4 +3,16 @@
     <string name="app_name">RP Fan Control</string>
     <string name="enable_control">Enable Control</string>
     <string name="disable_control">Disable Control</string>
+
+    <!-- Prerequisite Dialog Strings -->
+    <string name="prereq_title">Setup Required</string>
+    <string name="prereq_no_root">Root Access Missing</string>
+    <string name="prereq_no_root_msg">This app requires root access to control the fan.\n\nYour device is not rooted or root access has not been granted.\n\nPlease:\n1. Root your device using Magisk\n2. Grant root permissions to this app</string>
+    <string name="prereq_no_module">Magisk Module Not Installed</string>
+    <string name="prereq_no_module_msg">The Magisk module is not installed.\n\nPlease:\n1. Download the latest Magisk module zip\n2. Flash it in Magisk Manager\n3. Reboot your device</string>
+    <string name="prereq_both_missing">Root and Module Required</string>
+    <string name="prereq_both_msg">This app requires both root access and the Magisk module.\n\nPlease:\n1. Root your device using Magisk\n2. Flash the Magisk module\n3. Reboot your device</string>
+    <string name="prereq_retry">Retry</string>
+    <string name="prereq_close">Close App</string>
+    <string name="controls_disabled">Fan controls unavailable - prerequisites not met</string>
 </resources>

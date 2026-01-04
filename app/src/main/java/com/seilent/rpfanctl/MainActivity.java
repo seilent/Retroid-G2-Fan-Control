@@ -53,11 +53,77 @@ public class MainActivity extends AppCompatActivity {
     private int currentlyHighlightedIndex = -1;
     private boolean isProgrammaticChange = false;
 
+    private RootHelper.PrerequisiteStatus prereqStatus;
+    private AlertDialog prereqDialog;
+
     private Handler statusUpdateHandler;
     private Runnable statusUpdateRunnable;
 
     private long lastPresetChangeTime = 0;
     private static final long TEMP_UPDATE_DELAY_MS = 1000;
+
+    private void validatePrerequisites() {
+        prereqStatus = RootHelper.validatePrerequisites();
+
+        if (!prereqStatus.isMet) {
+            showPrerequisiteDialog();
+            disableFanControls();
+        } else {
+            enableFanControls();
+        }
+    }
+
+    private void showPrerequisiteDialog() {
+        if (prereqDialog != null && prereqDialog.isShowing()) {
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String title, message;
+
+        if (!prereqStatus.hasRoot && !prereqStatus.hasModule) {
+            title = getString(R.string.prereq_both_missing);
+            message = getString(R.string.prereq_both_msg);
+        } else if (!prereqStatus.hasRoot) {
+            title = getString(R.string.prereq_no_root);
+            message = getString(R.string.prereq_no_root_msg);
+        } else {
+            title = getString(R.string.prereq_no_module);
+            message = getString(R.string.prereq_no_module_msg);
+        }
+
+        builder.setTitle(title)
+               .setMessage(message)
+               .setCancelable(false)
+               .setPositiveButton(R.string.prereq_retry, (dialog, which) -> {
+                   validatePrerequisites();
+               })
+               .setNegativeButton(R.string.prereq_close, (dialog, which) -> {
+                   finishAffinity();
+               });
+
+        prereqDialog = builder.create();
+        prereqDialog.show();
+    }
+
+    private void disableFanControls() {
+        customControlSwitch.setEnabled(false);
+        fabAddPreset.setEnabled(false);
+        presetRecyclerView.setEnabled(false);
+        controlLabel.setText(R.string.controls_disabled);
+        customControlSwitch.setAlpha(0.5f);
+        fabAddPreset.setAlpha(0.5f);
+        presetRecyclerView.setAlpha(0.5f);
+    }
+
+    private void enableFanControls() {
+        customControlSwitch.setEnabled(true);
+        fabAddPreset.setEnabled(true);
+        presetRecyclerView.setEnabled(true);
+        customControlSwitch.setAlpha(1.0f);
+        fabAddPreset.setAlpha(1.0f);
+        presetRecyclerView.setAlpha(1.0f);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
         controlLabel = findViewById(R.id.control_label);
         fabAddPreset = findViewById(R.id.fab_add_preset);
         presetRecyclerView = findViewById(R.id.preset_list);
+
+        // Validate prerequisites AFTER views are initialized
+        validatePrerequisites();
 
         presetRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         presetAdapter = new PresetAdapter(this, presets, currentPresetUuid);
@@ -129,6 +198,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (!prereqStatus.isMet) {
+            validatePrerequisites();
+        }
+
         statusUpdateHandler.post(statusUpdateRunnable);
 
         isProgrammaticChange = true;
@@ -145,6 +219,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        if (prereqDialog != null && prereqDialog.isShowing()) {
+            prereqDialog.dismiss();
+        }
+
         statusUpdateHandler.removeCallbacks(statusUpdateRunnable);
     }
 
@@ -157,6 +236,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enableCustomControl() {
+        if (!prereqStatus.isMet) {
+            Toast.makeText(this, "Cannot enable - prerequisites not met", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String presetJson = prefs.getString(KEY_CURRENT_PRESET, null);
         Preset preset;
         if (presetJson != null) {
@@ -178,6 +262,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void disableCustomControl() {
+        if (!prereqStatus.isMet) {
+            Toast.makeText(this, "Cannot disable - prerequisites not met", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         RootHelper.setFanControlEnabled(false);
 
         requestTileUpdate();
@@ -243,6 +332,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectPreset(Preset preset) {
+        if (!prereqStatus.isMet) {
+            Toast.makeText(this, "Cannot select preset - prerequisites not met", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         currentPresetUuid = preset.getUuid();
         presetAdapter.setCurrentPreset(currentPresetUuid);
         prefs.edit().putString(KEY_CURRENT_PRESET, preset.toJson()).apply();
