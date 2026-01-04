@@ -81,6 +81,8 @@ public class RootHelper {
         if (!enabled) {
             executeShell("settings put system performance_mode 1");
             executeShell("settings put system fan_mode 4");
+        } else {
+            executeShell("settings put system fan_mode 6");
         }
     }
 
