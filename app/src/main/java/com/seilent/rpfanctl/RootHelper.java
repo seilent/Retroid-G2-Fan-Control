@@ -55,23 +55,8 @@ public class RootHelper {
     }
 
     public static void setFanDuty(int duty) {
-        writeToFile("/sys/class/gpio5_pwm2/duty", String.valueOf(duty));
-    }
-
-    public static void setThermalMode(int mode) {
-        writeToFile("/sys/class/gpio5_pwm2/thermal", String.valueOf(mode));
-    }
-
-    public static int getThermalMode() {
-        String value = readFile("/sys/class/gpio5_pwm2/thermal");
-        if (value != null) {
-            try {
-                return Integer.parseInt(value.trim());
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "Error parsing thermal mode", e);
-            }
-        }
-        return 0;
+        executeShell("settings put system fan_mode 6");
+        executeShell("settings put system fan_speed " + duty);
     }
 
     public static int getCpuTemp() {
@@ -86,15 +71,17 @@ public class RootHelper {
     }
 
     public static void resetToStock() {
-        setThermalMode(1);
-        executeShell("settings put system fan_mode 1");
-        executeShell("settings put system custom_fan_speed 0");
-        executeShell("settings put system performance_mode 1");
+        // Set to Smart mode - stock system controls fan based on temperature
+        executeShell("settings put system fan_mode 4");
     }
 
     public static void setFanControlEnabled(boolean enabled) {
         String value = enabled ? "1" : "0";
         executeShell("sed -i 's/^ENABLED=.*/ENABLED=" + value + "/' " + STATE_FILE);
+        if (!enabled) {
+            // When disabling, restore stock Smart mode
+            executeShell("settings put system fan_mode 4");
+        }
     }
 
     public static boolean isFanControlEnabled() {

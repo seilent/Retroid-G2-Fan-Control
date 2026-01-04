@@ -5,8 +5,6 @@
 CONFIG_DIR="/data/adb/modules/rpfanctl"
 CONFIG_FILE="$CONFIG_DIR/fan_config"
 STATE_FILE="$CONFIG_DIR/fan_state"
-THERMAL_SYSFS="/sys/class/gpio5_pwm2/thermal"
-DUTY_SYSFS="/sys/class/gpio5_pwm2/duty"
 TEMP_SYSFS="/sys/class/thermal/thermal_zone0/temp"
 POLL_INTERVAL=2
 HYSTERESIS_CYCLES=3
@@ -35,14 +33,10 @@ get_temp() {
     cat "$TEMP_SYSFS" 2>/dev/null || echo "0"
 }
 
-# Set fan duty cycle
+# Set fan duty cycle using stock system settings
 set_duty() {
-    echo "$1" > "$DUTY_SYSFS" 2>/dev/null
-}
-
-# Set thermal mode (0=manual, 1=auto)
-set_thermal_mode() {
-    echo "$1" > "$THERMAL_SYSFS" 2>/dev/null
+    settings put system fan_mode 6
+    settings put system fan_speed "$1"
 }
 
 # Find fan speed for given temperature
@@ -83,8 +77,6 @@ daemon_main() {
     PENDING_FAN_PCT=0
     PENDING_COUNT=0
 
-    set_thermal_mode 0
-
     while true; do
         get_config
         get_state
@@ -93,12 +85,6 @@ daemon_main() {
         if [ "$ENABLED_FROM_STATE" != "1" ]; then
             sleep 5
             continue
-        fi
-
-        THERMAL=$(cat "$THERMAL_SYSFS" 2>/dev/null || echo "1")
-        if [ "$THERMAL" != "0" ]; then
-            log_msg "Thermal mode overridden to $THERMAL, resetting to manual"
-            set_thermal_mode 0
         fi
 
         TEMP_MILLI=$(get_temp)
@@ -129,8 +115,8 @@ daemon_main() {
 
 # Handle signals
 cleanup() {
-    log_msg "Daemon stopping, reverting to stock"
-    set_thermal_mode 1
+    log_msg "Daemon stopping, reverting to stock Smart mode"
+    settings put system fan_mode 4
     exit 0
 }
 
