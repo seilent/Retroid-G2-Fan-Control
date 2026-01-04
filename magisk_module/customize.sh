@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print "================================"
-ui_print "  RP Fan Control Daemon v1.0"
+ui_print "  RP Fan Control Daemon v1.0.0"
 ui_print "================================"
 ui_print "Installing fan control daemon..."
 
