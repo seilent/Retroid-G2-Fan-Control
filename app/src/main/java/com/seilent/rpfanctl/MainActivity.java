@@ -60,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private Runnable statusUpdateRunnable;
 
     private long lastPresetChangeTime = 0;
+    private long lastToggleTime = 0;
     private static final long TEMP_UPDATE_DELAY_MS = 1000;
+    private static final long TOGGLE_DEBOUNCE_MS = 2000;
 
     private void validatePrerequisites() {
         prereqStatus = RootHelper.validatePrerequisites();
@@ -150,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
         fabAddPreset = findViewById(R.id.fab_add_preset);
         presetRecyclerView = findViewById(R.id.preset_list);
 
-        // Validate prerequisites AFTER views are initialized
         validatePrerequisites();
 
         presetRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -182,11 +183,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 updateStatus();
-                isProgrammaticChange = true;
-                boolean isCustomEnabled = RootHelper.isFanControlEnabled();
-                customControlSwitch.setChecked(isCustomEnabled);
-                updateControlLabel(isCustomEnabled);
-                isProgrammaticChange = false;
+                long timeSinceToggle = System.currentTimeMillis() - lastToggleTime;
+                if (timeSinceToggle >= TOGGLE_DEBOUNCE_MS) {
+                    isProgrammaticChange = true;
+                    boolean isCustomEnabled = RootHelper.isFanControlEnabled();
+                    customControlSwitch.setChecked(isCustomEnabled);
+                    updateControlLabel(isCustomEnabled);
+                    isProgrammaticChange = false;
+                }
                 statusUpdateHandler.postDelayed(this, 1000);
             }
         };
@@ -255,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
         RootHelper.setCurrentPreset(preset.getName(), preset.getUuid());
 
         lastPresetChangeTime = System.currentTimeMillis();
+        lastToggleTime = System.currentTimeMillis();
 
         requestTileUpdate();
         Toast.makeText(this, "Custom fan control enabled", Toast.LENGTH_SHORT).show();
@@ -268,6 +273,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         RootHelper.setFanControlEnabled(false);
+
+        lastToggleTime = System.currentTimeMillis();
 
         requestTileUpdate();
         Toast.makeText(this, "Reverted to stock fan control", Toast.LENGTH_SHORT).show();
