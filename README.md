@@ -1,17 +1,11 @@
 # RpFanCtl
 
-Custom fan control application for Retroid Pocket G2 devices.
+Custom fan control application for Retroid Pocket G2 devices.  
+Potentially works for another devices, but need testing.  
 It's pretty much vibe coded, so only serves as concept.  
 Main benefit is you can set your own fan curve.  
 Also to be able to use any performance mode with any fan speed.  
 DWYOR!
-
-
-## Do note by using this, it seems will break the stock fan control app
-
-The quicksettings for the stock fan control app disappeared even after disabling magisk module. 
-It might also because during experiementing, I ruined some of the system files. 
-Please let me know if uninstalling the module also restores the stock fan control.
 
 ## Preview
 
