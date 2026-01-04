@@ -1,11 +1,11 @@
 # RpFanCtl
 
-Custom fan control application for Retroid Pocket G2 devices.  
-Potentially works for another devices, but need testing.  
-It's pretty much vibe coded, so only serves as concept.  
-  
-Main benefit is you can set your own fan curve.  
-Using standard mode while still having fan spins, or using performance mode without having jet engine running.  
+Custom fan control application for Retroid Pocket G2 devices.
+Potentially works for other retroid devices, but needs testing.
+It's pretty much vibe coded, so it only serves as a concept.
+
+The main benefit is that you can set your own fan curve.
+Use standard mode while still having the fan spin, or use performance mode without having a jet engine running.  
 DWYOR!
 
 ## Preview
@@ -21,4 +21,4 @@ DWYOR!
 1. Download the latest Magisk module zip
 2. Flash in Magisk Manager
 3. Reboot your device
-4. Install apk and launch controller app
+4. Install the APK and launch the controller app
