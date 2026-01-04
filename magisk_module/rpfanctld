@@ -115,7 +115,8 @@ daemon_main() {
 
 # Handle signals
 cleanup() {
-    log_msg "Daemon stopping, reverting to stock Smart mode"
+    log_msg "Daemon stopping, reverting to stock (Performance mode + Smart fan)"
+    settings put system performance_mode 1
     settings put system fan_mode 4
     exit 0
 }

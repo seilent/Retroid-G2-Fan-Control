@@ -71,7 +71,7 @@ public class RootHelper {
     }
 
     public static void resetToStock() {
-        // Set to Smart mode - stock system controls fan based on temperature
+        executeShell("settings put system performance_mode 1");
         executeShell("settings put system fan_mode 4");
     }
 
@@ -79,7 +79,7 @@ public class RootHelper {
         String value = enabled ? "1" : "0";
         executeShell("sed -i 's/^ENABLED=.*/ENABLED=" + value + "/' " + STATE_FILE);
         if (!enabled) {
-            // When disabling, restore stock Smart mode
+            executeShell("settings put system performance_mode 1");
             executeShell("settings put system fan_mode 4");
         }
     }
