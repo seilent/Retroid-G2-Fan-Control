@@ -3,8 +3,9 @@
 Custom fan control application for Retroid Pocket G2 devices.  
 Potentially works for another devices, but need testing.  
 It's pretty much vibe coded, so only serves as concept.  
+  
 Main benefit is you can set your own fan curve.  
-Also to be able to use any performance mode with any fan speed.  
+Using standard mode while still having fan spins, or using performance mode without having jet engine running.  
 DWYOR!
 
 ## Preview
